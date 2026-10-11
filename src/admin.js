@@ -615,6 +615,8 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
     if (b.aboutEn !== undefined) s.aboutEn = str(b.aboutEn, 600);
     if (b.contactChannel !== undefined && ['whatsapp', 'telegram', 'phone', 'email'].includes(b.contactChannel)) s.contactChannel = b.contactChannel;
     if (b.telegramNotify !== undefined) s.telegramNotify = bool(b.telegramNotify);
+    if (b.chatEnabled !== undefined) s.chatEnabled = bool(b.chatEnabled);
+    if (b.chatWelcome !== undefined) s.chatWelcome = str(b.chatWelcome, 120);
     // توکن هرگز کامل به مرورگر برنمی‌گردد؛ «••••1234» یعنی «همان قبلی»
     if (b.telegramBotToken !== undefined && !/^••••/.test(String(b.telegramBotToken))) {
       const t = str(b.telegramBotToken, 80).trim();

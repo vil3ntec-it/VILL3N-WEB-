@@ -372,6 +372,61 @@
       .catch(function () { return { ok: false, error: 'اینترنت قطع است یا سرور در دسترس نیست. دوباره تلاش کنید.' }; });
   }
 
+  /* ───── گفت‌وگو با مالک ─────
+     رمزِ گفت‌وگو فقط در همین مرورگر است؛ جوابِ مالک (از پنل، کنترول سنتر یا تلگرام) هر چند ثانیه خوانده می‌شود. */
+  safe(function () {
+    var root = $('[data-chat]');
+    if (!root || !window.fetch) return;
+    root.hidden = false;
+    var box = $('#chat-box'), fab = $('[data-chat-open]', root), log = $('[data-chat-log]', root), form = $('[data-chat-form]', root), intro = $('[data-chat-intro]', root), err = $('[data-chat-err]', root), dot = $('[data-chat-dot]', root);
+    var KEY = 'v3-chat', st = { token: '', last: 0, seen: 0 }, timer = null, open = false, sending = false;
+    try { st = Object.assign(st, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* بی حافظه */ }
+    var save = function () { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { /* بی حافظه */ } };
+    var time = new Intl.DateTimeFormat('fa-AF', { hour: '2-digit', minute: '2-digit' });
+    var add = function (m) {
+      if (log.querySelector('[data-id="' + m.id + '"]')) return;
+      var li = doc.createElement('li'); li.className = 'chat-msg is-' + (m.from === 'owner' ? 'owner' : 'me'); li.setAttribute('data-id', m.id);
+      var p = doc.createElement('p'); p.textContent = m.body; li.appendChild(p);
+      var t = doc.createElement('time'); t.textContent = time.format(new Date(m.at)); li.appendChild(t);
+      log.appendChild(li); st.last = Math.max(st.last, m.at);
+      if (m.from === 'owner' && m.at > st.seen && !open) dot.hidden = false;
+    };
+    var scroll = function () { log.scrollTop = log.scrollHeight; };
+    var pull = function () {
+      if (!st.token) return Promise.resolve();
+      return fetch('/api/chat/' + encodeURIComponent(st.token) + '?after=' + (open ? 0 : st.last), { cache: 'no-store' }).then(function (r) {
+        if (r.status === 404) { st = { token: '', last: 0, seen: 0 }; save(); log.textContent = ''; intro.hidden = false; return; }
+        return r.json().then(function (j) { (j.messages || []).forEach(add); if (open) { st.seen = st.last; dot.hidden = true; scroll(); } save(); });
+      }).catch(function () { /* دورِ بعد */ });
+    };
+    var loop = function () { clearTimeout(timer); timer = setTimeout(function () { pull().then(loop); }, open ? 4000 : 30000); };
+    var show = function (v) {
+      open = v; box.hidden = !v; fab.setAttribute('aria-expanded', String(v));
+      if (v) { intro.hidden = !!st.token; pull(); setTimeout(function () { (st.token ? form.text : intro.name).focus(); }, 30); }
+      loop();
+    };
+    fab.addEventListener('click', function () { show(!open); });
+    $('[data-chat-close]', root).addEventListener('click', function () { show(false); fab.focus(); });
+    doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) { show(false); fab.focus(); } });
+    form.text.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit')); } });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = form.text.value.trim();
+      if (!text || sending) return;
+      sending = true; err.textContent = '';
+      var req = st.token ? post('/api/chat/' + encodeURIComponent(st.token), { text: text })
+        : post('/api/chat', { text: text, name: intro.name.value.trim(), contact: intro.contact.value.trim(), website: intro.website.value, page: location.pathname });
+      req.then(function (r) {
+        sending = false;
+        if (!r.ok) { err.textContent = r.error || 'نرفت؛ دوباره امتحان کنید.'; return; }
+        if (r.token) { st.token = r.token; intro.hidden = true; }
+        (r.messages || (r.message ? [r.message] : [])).forEach(add);
+        st.seen = st.last; save(); form.text.value = ''; scroll();
+      });
+    });
+    if (st.token) { pull(); loop(); }
+  });
+
   /* ───── سفارش اشتراک ───── */
   var dlg = $('#order');
   if (dlg && dlg.showModal) {

@@ -544,7 +544,13 @@ function normalizeBackup(src) {
       createdAt: isoOrNull(p.createdAt) || now, updatedAt: isoOrNull(p.updatedAt) || now,
     };
   });
-  return { apps, coupons, orders: rows('orders').slice(0, 100000).map(normalizeOrder), licenses, home, pages };
+  // گفت‌وگوهای سایت: فقط شکلِ درست؛ رمزِ بازدیدکننده هرگز در پشتیبان نیست (فقط هشش)
+  const chats = rows('chats').slice(0, 2000).filter((c) => /^[0-9a-f]{64}$/.test(String(c.tokenHash))).map((c) => ({
+    id: str(c.id, 20), tokenHash: String(c.tokenHash), name: str(c.name, 60) || 'بازدیدکننده', contact: str(c.contact, 80), page: str(c.page, 200),
+    status: c.status === 'closed' ? 'closed' : 'open', unread: int(c.unread, 0, 1e6), createdAt: int(c.createdAt, 0), updatedAt: int(c.updatedAt, 0),
+    messages: list(c.messages, 300).filter(isObj).map((m) => ({ id: str(m.id, 20), from: m.from === 'owner' ? 'owner' : 'visitor', body: str(m.body, 2000), at: int(m.at, 0) })).filter((m) => m.id && m.body),
+  }));
+  return { apps, coupons, orders: rows('orders').slice(0, 100000).map(normalizeOrder), licenses, home, pages, chats };
 }
 
 module.exports = {

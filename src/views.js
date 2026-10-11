@@ -210,6 +210,20 @@ ${body}
   <p class="foot-mark" aria-hidden="true">${esc(s.brand)}</p>
   <p class="foot-base"><b>${esc(s.brand)}</b><span>${esc(s.slogan)}</span><span>${esc(faYear())}</span></p>
 </footer>
+${!env.static && s.chatEnabled !== false ? `<div class="chat" data-chat hidden>
+  <button type="button" class="chat-fab" data-chat-open aria-expanded="false" aria-controls="chat-box">${icon('chat')}<span>پیام</span><i class="chat-dot" data-chat-dot hidden></i></button>
+  <section class="chat-box" id="chat-box" role="dialog" aria-modal="false" aria-labelledby="chat-title" hidden>
+    <header class="chat-head"><div><b id="chat-title">گفت‌وگو با ${esc(s.brand)}</b><small>${esc(s.chatWelcome || 'معمولاً در چند دقیقه جواب می‌دهیم.')}</small></div><button type="button" class="chat-x" data-chat-close aria-label="بستن">×</button></header>
+    <ol class="chat-log" data-chat-log aria-live="polite"></ol>
+    <form class="chat-intro" data-chat-intro>
+      <input name="name" maxlength="60" placeholder="نام شما" autocomplete="name">
+      <input name="contact" maxlength="80" placeholder="شمارهٔ تماس یا ایمیل (اختیاری)" dir="ltr" autocomplete="tel">
+      <input name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+    </form>
+    <form class="chat-send" data-chat-form><textarea name="text" rows="2" maxlength="2000" placeholder="پیامتان را بنویسید…" required aria-label="پیام"></textarea><button type="submit" class="btn btn-main" aria-label="فرستادن">فرستادن</button></form>
+    <p class="chat-err" data-chat-err role="alert"></p>
+  </section>
+</div>` : ''}
 </body>
 </html>`;
 }

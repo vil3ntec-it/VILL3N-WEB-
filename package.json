@@ -1,12 +1,12 @@
 {
   "name": "vill3n-top",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "سایت دانلود برنامه‌های VILL3N با پنل مالک — بدون هیچ وابستگی بیرونی",
   "private": true,
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test/smoke.js && node test/updater.js && node test/telegram.js && node test/media.js",
+    "test": "node test/smoke.js && node test/updater.js && node test/telegram.js && node test/media.js && node test/chat.js",
     "update": "node server.js update",
     "release": "node scripts/make-release.js"
   },
