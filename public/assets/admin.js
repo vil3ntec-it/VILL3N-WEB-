@@ -45,6 +45,7 @@
 
   var ICON = {
     home: '<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>', apps: '<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
+    sync: '<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.3 4.9L20 16"/><path d="M20 20v-4h-4"/>',
     chat: '<path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H10l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M8 10h8M8 13h5"/>',
     cart: '<path d="M4 5h2l2 11h10l2-8H7"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>', key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9m-3 3 2.5 2.5"/>',
     tag: '<path d="M4 4h7l9 9-7 7-9-9z"/><circle cx="8.5" cy="8.5" r="1.4"/>', gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M5.6 18.4l2.1-2.1m8.6-8.6 2.1-2.1"/>',
@@ -170,7 +171,7 @@
   }
 
   /* ───── قالب و مسیرها ───── */
-  var NAV = [['', 'داشبورد', 'home'], ['apps', 'برنامه‌ها', 'apps'], ['home', 'صفحهٔ اصلی', 'layout'], ['pages', 'صفحه‌ها', 'pages'], ['orders', 'سفارش‌ها', 'cart'], ['chats', 'پیام‌ها', 'chat'], ['licenses', 'اشتراک‌ها', 'key'], ['coupons', 'کدهای تخفیف', 'tag'], ['seo', 'سئو و هوش مصنوعی', 'search'], ['deploy', 'اتصال و استقرار', 'link'], ['settings', 'تنظیمات', 'gear'], ['security', 'امنیت', 'shield'], ['backup', 'پشتیبان', 'box']];
+  var NAV = [['', 'داشبورد', 'home'], ['apps', 'برنامه‌ها', 'apps'], ['home', 'صفحهٔ اصلی', 'layout'], ['pages', 'صفحه‌ها', 'pages'], ['orders', 'سفارش‌ها', 'cart'], ['chats', 'پیام‌ها', 'chat'], ['licenses', 'اشتراک‌ها', 'key'], ['coupons', 'کدهای تخفیف', 'tag'], ['seo', 'سئو و هوش مصنوعی', 'search'], ['deploy', 'اتصال و استقرار', 'link'], ['settings', 'تنظیمات', 'gear'], ['security', 'امنیت', 'shield'], ['backup', 'پشتیبان', 'box'], ['update', 'به‌روزرسانی', 'sync']];
   var main, side, shellEl, menuBtn, topTitle;
   /* ───── منوی گوشی و تبلت: سه‌خط ← کشوی بخش‌ها ─────
      زدن روی یک بخش کشو را نمی‌بندد؛ فقط ضربدر، زدن روی صفحهٔ بیرون یا Esc می‌بندد. */
@@ -1558,7 +1559,7 @@
   };
 
   /* ───── امنیت ───── */
-  var AUDIT = { 'app-create': 'ساخت برنامه', 'app-update': 'ویرایش برنامه', 'app-delete': 'حذف برنامه', 'home-update': 'صفحهٔ اصلی', 'page-create': 'ساخت صفحه', 'page-update': 'ویرایش صفحه', 'page-delete': 'حذف صفحه', 'block-image': 'تصویر بخش', setup: 'راه‌اندازی', login: 'ورود', 'login-fail': 'ورود ناموفق', password: 'تغییر رمز', profile: 'تغییر مشخصات', settings: 'تنظیمات', backup: 'پشتیبان', restore: 'بازگردانی', export: 'خروجی ایستا', 'email-code': 'کد ایمیل', 'reset-owner': 'پاک‌کردن رمز' };
+  var AUDIT = { 'app-create': 'ساخت برنامه', 'app-update': 'ویرایش برنامه', 'app-delete': 'حذف برنامه', 'home-update': 'صفحهٔ اصلی', 'page-create': 'ساخت صفحه', 'page-update': 'ویرایش صفحه', 'page-delete': 'حذف صفحه', 'block-image': 'تصویر بخش', setup: 'راه‌اندازی', login: 'ورود', 'login-fail': 'ورود ناموفق', password: 'تغییر رمز', profile: 'تغییر مشخصات', settings: 'تنظیمات', backup: 'پشتیبان', restore: 'بازگردانی', export: 'خروجی ایستا', 'email-code': 'کد ایمیل', 'reset-owner': 'پاک‌کردن رمز', 'site-update': 'به‌روزرسانیِ سایت', 'chat-reply': 'جوابِ پیام' };
   ROUTES.security = function () {
     return api('GET', '/security').then(function (r) {
       var pw = { current: '', next: '', again: '' }, pf = { username: r.username, email: r.email, current: '' }, ec = Object.assign({}, r.emailCode), test = { ticket: '', code: '' };
@@ -1621,6 +1622,80 @@
           } })]),
       ])]);
     return Promise.resolve();
+  };
+
+  /* ───── به‌روزرسانی (src/updates.js) ───── */
+  ROUTES.update = function () {
+    var alive = true, timer = 0, busy = '';
+    S.stop = function () { alive = false; clearTimeout(timer); };
+    var box = h('div');
+    function ago(t) { return t ? dateTime(t) : 'هنوز نه'; }
+    function draw(r, note) {
+      if (!alive) return;
+      clear(box);
+      var state, tone = '';
+      if (!r.connected) { state = 'به کنترول سنتر وصل نیست'; tone = 'warn'; }
+      else if (r.pendingRestart) { state = 'نسخهٔ ' + r.installed + ' نصب شد؛ در حال راه‌اندازیِ دوباره…'; tone = 'ok'; }
+      else if (r.available) { state = 'نسخهٔ تازه آماده است: ' + r.latest; tone = 'new'; }
+      else if (r.latest) { state = 'تازه‌ترین نسخه نصب است'; tone = 'ok'; }
+      else state = 'هنوز بررسی نشده';
+      var last = r.last;
+      add(box, h('div', { class: 'grid2' }, [
+        h('div', { class: 'card wide upd-hero' }, [
+          h('div', { class: 'upd-ver' }, [h('small', { text: 'نسخهٔ فعلیِ سایت' }), h('b', { class: 'ltr', text: r.running })]),
+          h('div', { class: 'upd-state' }, [h('span', { class: 'badge ' + (tone === 'ok' ? 'ok' : tone === 'warn' ? 'warn' : tone === 'new' ? 'new' : ''), text: state }), h('span', { class: 'mute small', text: 'آخرین بررسی: ' + ago(r.lastCheck) })]),
+          note ? h('p', { class: 'hint', text: note }) : null,
+          h('div', { class: 'row', style: 'margin-top:14px' }, [
+            h('button', { class: 'btn' + (r.available ? '' : ' main'), type: 'button', disabled: !r.connected || !!busy || r.busy, text: busy === 'check' ? 'در حال بررسی…' : 'بررسیِ همین حالا', onclick: doCheck }),
+            r.available ? h('button', { class: 'btn main', type: 'button', disabled: !!busy || r.busy, text: busy === 'apply' ? 'در حال نصب…' : 'نصبِ نسخهٔ ' + r.latest, onclick: doApply }) : null,
+          ]),
+        ]),
+        h('div', { class: 'card' }, [h('h2', { text: 'نصبِ خودکار' }),
+          h('label', { class: 'check' }, [h('input', { type: 'checkbox', checked: r.auto, disabled: !r.autoAllowed, onchange: function (e) { api('POST', '/update/auto', { on: e.target.checked }).then(function (x) { toast(x.auto ? 'نصبِ خودکار روشن شد' : 'نصبِ خودکار خاموش شد'); draw(x); }, fail); } }), h('span', { text: 'هر ساعت خودش نسخهٔ تازه را نصب کند' })]),
+          h('p', { class: 'hint', text: r.autoAllowed ? 'اگر خاموش باشد، نسخهٔ تازه فقط با دکمهٔ «نصب» همین صفحه نصب می‌شود.' : (r.connected ? 'در config.json خاموش شده ("autoUpdate": false).' : 'فقط وقتی سایت از کنترول سنتر اجرا شود.') })]),
+        h('div', { class: 'card' }, [h('h2', { text: 'نسخه از کجا می‌آید؟' }),
+          h('ol', { class: 'upd-flow' }, [h('li', { text: 'ریپوی سایت — فقط کنترول سنتر آن را می‌شناسد.' }), h('li', { text: 'کنترول سنتر هر ۱۰ دقیقه، یا همان لحظه با «بررسی»، نسخه را می‌گیرد و فایل‌به‌فایل می‌سنجد.' }), h('li', { text: 'سایت فقط از کنترول سنتر می‌گیرد؛ داده، تصویرها و تنظیمات دست نمی‌خورند.' })]),
+          last ? h('p', { class: 'small ' + (last.status === 'error' ? 'bad-text' : 'mute'), text: 'آخرین نتیجه (' + dateTime(last.at) + '، ' + (last.source === 'auto' ? 'خودکار' : 'از پنل') + '): ' + (last.status === 'error' ? last.error : last.status === 'updated' ? last.from + ' ← ' + last.version + ' (' + num(last.changed) + ' فایل)' : 'تازه‌ترین بود') }) : null]),
+      ]));
+      if (!r.connected) add(box, h('div', { class: 'card', style: 'margin-top:12px' }, [h('h2', { text: 'چرا وصل نیست؟' }), h('p', { class: 'hint', text: 'نسخهٔ تازه فقط از راهِ کنترول سنتر می‌رسد. سایت را از کنترول سنتر (بخشِ «سایت‌ها») اجرا کنید تا نشانیِ به‌روزرسانی خودکار به آن داده شود.' })]));
+    }
+    function waitRestart(target, tries) {
+      if (!alive) return;
+      timer = setTimeout(function () {
+        api('GET', '/update').then(function (r) {
+          if (r.running === target) { toast('نسخهٔ ' + target + ' فعال شد'); setTimeout(function () { location.reload(); }, 900); }
+          else if (tries > 0) { draw(r); waitRestart(target, tries - 1); }
+          else draw(r, 'سایت هنوز با نسخهٔ قبلی کار می‌کند. از کنترول سنتر یک بار ری‌استارتش کنید.');
+        }, function () { if (tries > 0) waitRestart(target, tries - 1); });
+      }, 2500);
+    }
+    function doCheck() {
+      busy = 'check'; api('GET', '/update').then(function (r) { draw(r); });
+      api('POST', '/update/check', {}).then(function (r) {
+        busy = '';
+        var s = r.server, note = '';
+        if (s && s.error) note = 'کنترول سنتر نتوانست از ریپو بگیرد: ' + s.error;
+        else if (s && s.throttled) note = 'کنترول سنتر همین چند لحظه پیش بررسی کرده بود.';
+        draw(r, note);
+        toast(r.available ? 'نسخهٔ ' + r.latest + ' آماده است' : 'تازه‌ترین نسخه نصب است');
+      }, function (e) { busy = ''; fail(e); api('GET', '/update').then(function (r) { draw(r); }); });
+    }
+    function doApply() {
+      confirmBox('نصبِ نسخهٔ تازه', 'سایت چند ثانیه بسته و دوباره باز می‌شود. داده، تصویرها و تنظیمات دست نمی‌خورند.', 'نصب').then(function (ok) {
+        if (!ok) return;
+        busy = 'apply'; api('GET', '/update').then(function (r) { draw(r); });
+        api('POST', '/update/apply', {}).then(function (r) {
+          busy = '';
+          if (r.result && r.result.status === 'updated') {
+            toast('نسخهٔ ' + r.result.version + ' نصب شد (' + num(r.result.changed) + ' فایل)');
+            if (r.restarting) { draw(r); waitRestart(r.result.version, 24); } else draw(r, 'نصب شد؛ برای فعال شدن، سایت را از کنترول سنتر یک بار ری‌استارت کنید.');
+          } else { draw(r); toast('تازه‌ترین نسخه نصب است'); }
+        }, function (e) { busy = ''; fail(e); api('GET', '/update').then(function (r) { draw(r); }); });
+      });
+    }
+    clear(main);
+    add(main, [head('به‌روزرسانی', 'نسخهٔ تازه از ریپوی سایت به کنترول سنتر و از آن‌جا به همین سایت می‌رسد؛ سایت هیچ‌وقت مستقیم به ریپو وصل نمی‌شود.'), box]);
+    return api('GET', '/update').then(function (r) { draw(r); if (r.connected && !r.lastCheck) doCheck(); });
   };
 
   /* ───── شروع ───── */

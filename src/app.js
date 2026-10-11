@@ -240,6 +240,7 @@ function createSite({ dataDir, publicDir, config = {} }) {
   const indexNow = ai.indexNow(site, env);
   require('./admin')({ app, db, auth, files, assets, env, dataDir, config, VERSION, pages, indexNow });
   require('./chat').install({ app, db, auth });
+  const updates = require('./updates').install({ app, db, auth, dataDir, VERSION });
 
   let fontTimer = null;
   function start() {
@@ -251,9 +252,9 @@ function createSite({ dataDir, publicDir, config = {} }) {
     fontTimer = setInterval(() => { if (fontFile(assets)) clearInterval(fontTimer); else tryFont(); }, 20 * 60 * 1000);
     if (fontTimer.unref) fontTimer.unref();
   }
-  function stop() { try { clearInterval(files.timer); clearInterval(fontTimer); indexNow.stop(); } catch (_) { /* نبود */ } db.flush(); }
+  function stop() { try { updates.stop(); clearInterval(files.timer); clearInterval(fontTimer); indexNow.stop(); } catch (_) { /* نبود */ } db.flush(); }
 
-  return Object.assign(site, { indexNow, start, stop, handler: (req, res) => app.handle(req, res) });
+  return Object.assign(site, { indexNow, updates, start, stop, handler: (req, res) => app.handle(req, res) });
 }
 
 function listen(site, { port, host }) {

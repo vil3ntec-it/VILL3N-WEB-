@@ -371,3 +371,12 @@ dialog.modal::backdrop { background: rgba(0, 0, 0, .68); }
 }
 .back-mobile { display: none; }
 @media (max-width: 860px) { .back-mobile { display: inline-flex; } }
+
+/* به‌روزرسانی */
+.badge.new { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 55%, transparent); }
+.bad-text { color: var(--bad); }
+.upd-hero { display: grid; gap: 6px; }
+.upd-ver small { display: block; color: var(--mute); font-size: .82rem; }
+.upd-ver b { font-size: 2rem; line-height: 1.2; letter-spacing: .02em; }
+.upd-state { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.upd-flow { margin: 0 0 10px; padding-inline-start: 1.2em; display: grid; gap: 6px; color: var(--mute); font-size: .9rem; }

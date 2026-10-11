@@ -115,26 +115,18 @@ if (held !== true) {
 const { createSite, listen, VERSION } = require('./src/app');
 const site = createSite({ dataDir: config.dataDir, publicDir: path.join(ROOT, 'public'), config });
 
-/* ───── به‌روزرسانیِ خودکار از سرورِ خانگی ─────
-   دو دقیقه بعد از روشن شدن و بعد هر ساعت، فقط از آینهٔ کنترول سنتر (SITE_UPDATE_URL).
-   سایت هیچ نشانیِ GitHub نمی‌شناسد. با "autoUpdate": false در config.json خاموش می‌شود. */
+/* ───── به‌روزرسانی از سرورِ خانگی (src/updates.js) ─────
+   خودکار: دو دقیقه بعد از روشن شدن و بعد هر ساعت؛ دستی: پنلِ مدیریت ← «به‌روزرسانی».
+   فقط از آینهٔ کنترول سنتر (SITE_UPDATE_URL)؛ سایت هیچ نشانیِ GitHub نمی‌شناسد.
+   خودکار با "autoUpdate": false در config.json یا با کلیدِ همان صفحه خاموش می‌شود. */
 function scheduleUpdates() {
-  if (passenger || fileConfig.autoUpdate === false || !updateUrl()) return;
-  const { checkAndApply } = require('./src/core/updater');
-  let busy = false;
-  const tick = async () => {
-    if (busy || closing) return;
-    busy = true;
-    try {
-      const r = await checkAndApply({ root: ROOT, dataDir: config.dataDir, baseUrl: updateUrl(), log: console.log });
-      if (r.status === 'updated') {
-        if (process.env.VILL3N_CHILD) shutdown(require('./src/supervisor').RESTART_CODE);
-        else console.log(`نسخهٔ ${r.version} نصب شد؛ با اجرای دوبارهٔ سایت فعال می‌شود.`);
-      }
-    } catch (e) { console.error(`[به‌روزرسانی] ${e.message}`); } finally { busy = false; }
-  };
-  setTimeout(tick, Number(process.env.VILL3N_UPDATE_DELAY_MS) || 2 * 60 * 1000).unref();
-  setInterval(tick, 3600 * 1000).unref();
+  if (passenger) return;
+  site.updates.configure({
+    url: updateUrl(),
+    allowAuto: fileConfig.autoUpdate !== false,
+    // نگهبان (supervisor) با کدِ 75 نسخهٔ تازه را بالا می‌آورد؛ بی نگهبان فقط نصب می‌شود
+    restart: process.env.VILL3N_CHILD ? () => shutdown(require('./src/supervisor').RESTART_CODE) : null,
+  });
 }
 
 function openBrowser(url) {
