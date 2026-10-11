@@ -405,10 +405,12 @@
         submit.disabled = false; submit.textContent = 'ثبت سفارش';
         if (!r.ok || !r.no) { err.textContent = r.error || 'ثبت نشد. دوباره تلاش کنید.'; return; }
         $('[data-no]', dlg).textContent = toFa(r.no);
-        var wa = dlg.getAttribute('data-wa'), link = $('[data-wa-link]', dlg);
-        if (wa && link) {
+        // راهِ تماسی که مالک برگزیده (واتساپ، تلگرام، تلفن یا ایمیل)
+        var base = dlg.getAttribute('data-contact'), kind = dlg.getAttribute('data-contact-kind'), link = $('[data-wa-link]', dlg);
+        var msg = 'سلام، سفارش شمارهٔ ' + r.no + ' را برای «' + dlg.getAttribute('data-appname') + '» (' + (r.plan || '') + ') ثبت کردم. نام: ' + name;
+        if (base && base !== '#contact' && link) {
           link.hidden = false;
-          link.href = 'https://wa.me/' + wa + '?text=' + encodeURIComponent('سلام، سفارش شمارهٔ ' + r.no + ' را برای «' + dlg.getAttribute('data-appname') + '» (' + (r.plan || '') + ') ثبت کردم. نام: ' + name);
+          link.href = kind === 'whatsapp' ? base + '?text=' + encodeURIComponent(msg) : kind === 'email' ? base + '?body=' + encodeURIComponent(msg) : base;
         }
         $('[data-step="form"]', dlg).hidden = true; $('[data-step="done"]', dlg).hidden = false;
         var done = $('[data-done]', dlg);

@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const crypto = require('crypto');
+const telegram = require('./core/telegram');
 const { App, HttpError, Assets, sendFile, precompress, MIME, CSP } = require('./core/http');
 const { DB } = require('./core/db');
 const { Auth } = require('./core/auth');
@@ -220,6 +221,12 @@ function createSite({ dataDir, publicDir, config = {} }) {
     if (!L.hit(`order-try:${ctx.ipKey}`, 30, 60 * 60 * 1000) || !L.peek(`order:${ctx.ipKey}`, 6) || !L.peek('order:all', 400)) throw new HttpError(429, busy);
     const { order, duplicate } = model.createOrder(db, b, ctx.ip);
     if (!duplicate) { L.hit(`order:${ctx.ipKey}`, 6, 60 * 60 * 1000); L.hit('order:all', 400, 60 * 60 * 1000); }
+    // خبرِ سفارشِ تازه به تلگرامِ مالک (اگر روشن است). منتظرش نمی‌مانیم: کندیِ تلگرام نباید سفارش را کند کند
+    if (!duplicate) {
+      const s = db.data.settings;
+      telegram.send(s, `🛒 سفارشِ تازه #${order.no}\nبرنامه: ${order.appName}\nاشتراک: ${order.planName}\nمبلغ: ${order.total} ${s.currency}\nنام: ${order.name}\nتلفن: ${order.phone}${order.note ? `\nیادداشت: ${order.note}` : ''}`)
+        .catch((e) => console.error(`[تلگرام] ${e.message}`));
+    }
     ctx.json({ ok: true, no: order.no, total: order.total, plan: order.planName, duplicate });
   });
 

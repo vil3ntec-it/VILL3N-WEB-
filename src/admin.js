@@ -5,6 +5,7 @@ const os = require('os');
 const path = require('path');
 const dns = require('dns');
 const { HttpError } = require('./core/http');
+const telegram = require('./core/telegram');
 const { verifyPassword } = require('./core/auth');
 const { hashFile, VIDEO_MAX } = require('./core/files');
 const model = require('./core/model');
@@ -559,7 +560,24 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
 
   /* ───────────── تنظیمات ───────────── */
 
-  app.get(`${A}/settings`, authed((ctx) => ctx.json({ ok: true, settings: data().settings, font: fontFile(assets) })));
+  const publicSettings = () => Object.assign({}, data().settings, { telegramBotToken: telegram.mask(data().settings.telegramBotToken) });
+  app.get(`${A}/settings`, authed((ctx) => ctx.json({ ok: true, settings: publicSettings(), font: fontFile(assets) })));
+  // تلگرام: پیدا کردنِ chat id (بعد از /start به ربات) و پیامِ آزمایشی
+  app.post(`${A}/telegram/find-chat`, authed(async (ctx) => {
+    if (!L.hit('tg-find', 10, 10 * 60 * 1000)) throw new HttpError(429, 'کمی صبر کنید و دوباره امتحان کنید');
+    const b = await ctx.readJson(4096);
+    const token = /^••••/.test(String(b.token || '')) || !b.token ? data().settings.telegramBotToken : str(b.token, 80).trim();
+    let chat;
+    try { chat = await telegram.findChat(token); } catch (e) { throw new HttpError(400, e.message); }
+    if (!chat) throw new HttpError(404, 'هنوز پیامی به ربات نرسیده. در تلگرام ربات را باز کنید، Start را بزنید و دوباره امتحان کنید.');
+    ctx.json({ ok: true, chat });
+  }));
+  app.post(`${A}/telegram/test`, authed(async (ctx) => {
+    if (!L.hit('tg-test', 10, 10 * 60 * 1000)) throw new HttpError(429, 'کمی صبر کنید و دوباره امتحان کنید');
+    const s = data().settings;
+    try { await telegram.call(s.telegramBotToken, 'sendMessage', { chat_id: s.telegramChatId, text: `✅ پیامِ آزمایشیِ ${s.brand}: اعلان‌های سایت به این‌جا می‌رسد.` }); } catch (e) { throw new HttpError(400, e.message); }
+    ctx.json({ ok: true });
+  }));
   // lenient=true (بازگردانی پشتیبان): مقدار نادرست فقط نادیده گرفته می‌شود
   function applySettings(s, b, lenient = false) {
     const text = { brand: 40, slogan: 80, heroTitle: 120, heroText: 400, about: 400, email: 120, phone: 24, telegram: 40, currency: 20, orderNote: 300 };
@@ -577,6 +595,14 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
     if (b.indexNow !== undefined) s.indexNow = bool(b.indexNow);
     if (b.services !== undefined) s.services = str(b.services, 3000).split(/\r?\n/).map((l) => l.trim()).filter(Boolean).slice(0, 12).join('\n');
     if (b.aboutEn !== undefined) s.aboutEn = str(b.aboutEn, 600);
+    if (b.contactChannel !== undefined && ['whatsapp', 'telegram', 'phone', 'email'].includes(b.contactChannel)) s.contactChannel = b.contactChannel;
+    if (b.telegramNotify !== undefined) s.telegramNotify = bool(b.telegramNotify);
+    // توکن هرگز کامل به مرورگر برنمی‌گردد؛ «••••1234» یعنی «همان قبلی»
+    if (b.telegramBotToken !== undefined && !/^••••/.test(String(b.telegramBotToken))) {
+      const t = str(b.telegramBotToken, 80).trim();
+      if (t && !telegram.validToken(t)) { if (!lenient) throw new HttpError(400, 'توکنِ ربات درست نیست؛ همان متنی را بچسبانید که BotFather داد (مثل 123456:ABC…)'); } else s.telegramBotToken = t;
+    }
+    if (b.telegramChatId !== undefined) s.telegramChatId = str(b.telegramChatId, 32).replace(/[^\d@A-Za-z_-]/g, '');
     for (const k of ['googleVerify', 'bingVerify']) if (b[k] !== undefined) s[k] = str(b[k], 120).replace(/[^\w.=-]/g, '');
     if (b.autoFont !== undefined) s.autoFont = bool(b.autoFont);
     if (b.maxUploadMB !== undefined) s.maxUploadMB = int(b.maxUploadMB, 1, 16384, 2048);
@@ -587,7 +613,7 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
     const s = data().settings;
     applySettings(s, b);
     db.audit('settings', 'تنظیمات ذخیره شد', ctx.ip); db.touch();
-    ctx.json({ ok: true, settings: s });
+    ctx.json({ ok: true, settings: publicSettings() });
   }));
 
   app.get(`${A}/seo`, authed((ctx) => {
@@ -689,13 +715,13 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
 
   const stamp = () => dayKey();
   app.get(`${A}/backup`, authed((ctx) => {
-    const copy = Object.assign({}, data(), { owner: null, sessions: [] }); // رمز و نشست‌ها در پشتیبان نمی‌رود
+    const copy = Object.assign({}, data(), { owner: null, sessions: [], settings: Object.assign({}, data().settings, { telegramBotToken: '' }) }); // رمز و نشست‌ها در پشتیبان نمی‌رود
     db.audit('backup', 'پشتیبان داده دانلود شد', ctx.ip);
     ctx.send(200, JSON.stringify(copy), 'application/json; charset=utf-8', { 'Content-Disposition': `attachment; filename="vill3n-backup-${stamp()}.json"`, 'Cache-Control': 'no-store' });
   }));
 
   app.get(`${A}/backup.zip`, authed(async (ctx) => {
-    const copy = Object.assign({}, data(), { owner: null, sessions: [] });
+    const copy = Object.assign({}, data(), { owner: null, sessions: [], settings: Object.assign({}, data().settings, { telegramBotToken: '' }) });
     const entries = [{ name: 'db.json', data: Buffer.from(JSON.stringify(copy)) }];
     for (const [sub, dir] of [['images', files.imagesDir], ['files', files.filesDir]]) {
       for (const f of fs.readdirSync(dir)) { const full = path.join(dir, f); if (fs.statSync(full).isFile()) entries.push({ name: `${sub}/${f}`, file: full }); }

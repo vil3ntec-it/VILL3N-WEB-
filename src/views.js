@@ -40,10 +40,21 @@ function fontTags(a, preload) {
 function staticFile(app, v) { return `${app.slug}-${v.version}-${v.platform}.${v.ext}`.replace(/[^\w.-]/g, '_'); }
 function dlLatest(env, app, v) { return env.static ? `/files/${staticFile(app, v)}` : `/download/${app.slug}?p=${v.platform}`; }
 function dlExact(env, app, v) { return env.static ? `/files/${staticFile(app, v)}` : `/download/${app.slug}/${v.id}`; }
-function waLink(s, text) {
-  const n = String(s.whatsapp || '').replace(/\D/g, '');
-  return n ? `https://wa.me/${n}${text ? `?text=${encodeURIComponent(text)}` : ''}` : (s.phone ? `tel:${s.phone}` : '#contact');
+// راهِ تماسی که مالک در تنظیمات برگزیده؛ اگر خالی است، اولین راهِ موجود
+const CONTACT_LABEL = { whatsapp: 'واتساپ', telegram: 'تلگرام', phone: 'تماس', email: 'ایمیل' };
+function contactKind(s) {
+  const has = { whatsapp: /\d/.test(s.whatsapp || ''), telegram: /\w/.test(s.telegram || ''), phone: /\d/.test(s.phone || ''), email: /@/.test(s.email || '') };
+  return [s.contactChannel, 'whatsapp', 'telegram', 'phone', 'email'].find((k) => has[k]) || '';
 }
+function contactLink(s, text, kind = contactKind(s)) {
+  const q = text ? encodeURIComponent(text) : '';
+  if (kind === 'whatsapp') return `https://wa.me/${String(s.whatsapp).replace(/\D/g, '')}${q ? `?text=${q}` : ''}`;
+  if (kind === 'telegram') return `https://t.me/${String(s.telegram).replace(/^@/, '').replace(/[^\w]/g, '')}`;
+  if (kind === 'phone') return `tel:${String(s.phone).replace(/[^\d+]/g, '')}`;
+  if (kind === 'email') return `mailto:${s.email}${q ? `?body=${q}` : ''}`;
+  return '#contact';
+}
+const waLink = contactLink;
 const ext = (href) => (/^https?:/i.test(href) ? ' target="_blank" rel="noopener"' : '');
 function waOrder(env, app, plan) { return waLink(env.settings, `سلام، می‌خواهم اشتراک «${plan.name}» برنامهٔ «${app.name}» را سفارش بدهم.`); }
 
@@ -553,7 +564,7 @@ ${others.length ? `
 </section>` : ''}
 
 ${plans.length && !env.static ? `
-<dialog class="order" id="order" aria-labelledby="order-title" data-app="${esc(app.id)}" data-currency="${esc(s.currency)}" data-wa="${esc((s.whatsapp || '').replace(/\D/g, ''))}" data-appname="${esc(app.name)}">
+<dialog class="order" id="order" aria-labelledby="order-title" data-app="${esc(app.id)}" data-currency="${esc(s.currency)}" data-contact="${esc(contactLink(s, '', contactKind(s)))}" data-contact-kind="${esc(contactKind(s))}" data-appname="${esc(app.name)}">
   <form method="dialog" class="order-box" novalidate>
     <button class="order-x" type="button" data-close aria-label="بستن">${icon('close')}</button>
     <div data-step="form">
@@ -578,7 +589,7 @@ ${plans.length && !env.static ? `
       <h2 tabindex="-1" data-done>سفارش شما ثبت شد</h2>
       <p class="order-no">شمارهٔ سفارش <b data-no></b></p>
       <p>${esc(s.orderNote)}</p>
-      <a class="btn btn-app btn-xl" data-wa-link target="_blank" rel="noopener" hidden>${icon('chat')}فرستادن سفارش در واتساپ</a>
+      <a class="btn btn-app btn-xl" data-wa-link target="_blank" rel="noopener" hidden>${icon('chat')}فرستادن سفارش در ${esc(CONTACT_LABEL[contactKind(s)] || 'واتساپ')}</a>
       <button class="btn btn-ghost" type="button" data-close>بستن</button>
     </div>
   </form>

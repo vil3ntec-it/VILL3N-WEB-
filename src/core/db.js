@@ -39,6 +39,10 @@ function defaults() {
         'سیستم صرافی، دکان و باشگاه — حساب‌وکتاب، موجودی، مشتری و اشتراک، حتی بدون اینترنت',
         'سرور خانگی و میزبانی — راه‌اندازیِ سایت و برنامه روی کامپیوترِ خودتان با دامنه و پشتیبان‌گیریِ خودکار',
       ].join('\n'),
+      contactChannel: 'whatsapp', // دکمه‌های «سفارش» و «پرسش» به کجا بروند: whatsapp | telegram | phone | email
+      telegramNotify: false,      // سفارشِ تازه به تلگرامِ مالک خبر داده شود
+      telegramBotToken: '',
+      telegramChatId: '',
       // خلاصهٔ انگلیسی برای هوش مصنوعی‌ها و جست‌وجوی انگلیسی
       aboutEn: 'VILL3N builds custom software for businesses in Afghanistan and Persian/Dari speakers: Windows, Android and web apps, professional and 3D websites, fuel-station (petrol/diesel pump) management systems, currency-exchange, shop and gym management systems that work offline, and home-server hosting.',
     },
