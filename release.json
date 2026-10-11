@@ -1,5 +1,5 @@
 {
- "version": "2.1.2",
+ "version": "2.2.0",
  "files": [
   {
    "path": ".gitattributes",
@@ -54,7 +54,7 @@
   {
    "path": "package.json",
    "size": 488,
-   "sha256": "bfbe69d77ac9004b0dd412e79113cc010f3b93a3e744e59a56b2cc9701617824"
+   "sha256": "0cda50200e8eb73692b80756072202e8948e130496852da46580d6e587340281"
   },
   {
    "path": "preview/app/fitness-pro.html",
@@ -93,8 +93,8 @@
   },
   {
    "path": "public/assets/admin.js",
-   "size": 165902,
-   "sha256": "893083a153693f2b160c01e3242a396a23c4c7c7321f5c26903f41652937d30e"
+   "size": 166811,
+   "sha256": "370e7b034ea8293ad4df1fb194c0bd1523910c5ab6e3c87f09fe1682779e4d70"
   },
   {
    "path": "public/assets/favicon.svg",
@@ -113,8 +113,8 @@
   },
   {
    "path": "public/assets/site.css",
-   "size": 86171,
-   "sha256": "92a59d0ee4e12e7df02eee1ed267333f4e05be0fb64c949cdff76d23c0da7f12"
+   "size": 86432,
+   "sha256": "2e0eb0079fe48416bc99925a9a558d532475c4839671912e19184a335ff1d1c1"
   },
   {
    "path": "public/assets/site.js",
@@ -168,13 +168,13 @@
   },
   {
    "path": "src/admin.js",
-   "size": 48616,
-   "sha256": "c61bdc605340c96a8637ee19ec4d4be06bb94d408ca53ab7aa4254a0ee255755"
+   "size": 48828,
+   "sha256": "74d555342764a6deb16208ec20f89cc537ac841b2c5595a52fdcd7c530dc2597"
   },
   {
    "path": "src/ai.js",
-   "size": 17085,
-   "sha256": "be7333f44d8bafafe3bae3cee8592281709ca7b4b4a89b8eedcb572d432b5e70"
+   "size": 17605,
+   "sha256": "7db773704fd44b90f087b4ee9af74a3d697d0fa6c5220abe9b43ae0169a96577"
   },
   {
    "path": "src/app.js",
@@ -193,8 +193,8 @@
   },
   {
    "path": "src/core/db.js",
-   "size": 8729,
-   "sha256": "c6ac28bcedc6400a4e3d17e28b24db69a6079ce034405c8bfed9006701ba979f"
+   "size": 10379,
+   "sha256": "bf9fab57fd4566db41cff9ffe76cc99414f7208f64ae63dbab2af4416194b075"
   },
   {
    "path": "src/core/detect.js",
@@ -263,8 +263,8 @@
   },
   {
    "path": "src/views.js",
-   "size": 48009,
-   "sha256": "c8b652145ae755cd8600e489d78ae040d571a3083544c15a06dd266f0d9bcb22"
+   "size": 49637,
+   "sha256": "166c517b3d78eedee889827c176539e9f40bc1179d027d7bb0ae512d479cbdaa"
   },
   {
    "path": "test/demo.js",
@@ -278,8 +278,8 @@
   },
   {
    "path": "test/smoke.js",
-   "size": 126613,
-   "sha256": "2374eb103b16c42949f55cb831e077921694ba4f47f59e726276dbea166443fb"
+   "size": 126629,
+   "sha256": "02f99256236ddfa96a5e6d569e39729bf5668c1791be757f329b7704494213bd"
   },
   {
    "path": "test/updater.js",

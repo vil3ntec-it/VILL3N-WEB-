@@ -284,7 +284,16 @@ function miniCard(app, env, vt = true) {
 </li>`;
 }
 
+// خدمات از تنظیمات: هر خط «نام — توضیح»
+function services(s) {
+  return String(s.services || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean).slice(0, 12).map((l) => {
+    const m = l.split(/\s+[—–-]\s+/);
+    return { name: m[0].slice(0, 80), text: m.slice(1).join(' — ').slice(0, 300) };
+  }).filter((x) => x.name);
+}
+
 function home(env) {
+  const svc = services(env.settings);
   const s = env.settings;
   const apps = env.apps;
   const blocks = arr(env.home && env.home.blocks);
@@ -324,8 +333,14 @@ ${marquee(env)}
   ${apps.length ? `<ol class="chapter-list">${lead.map((a, i) => chapter(a, env, i)).join('')}</ol>` : '<div class="empty"><p>هنوز برنامه‌ای منتشر نشده است.</p><p>به‌زودی اولین برنامه همین‌جا قرار می‌گیرد.</p></div>'}
   ${rest.length ? `<h3 class="more-title">برنامه‌های دیگر</h3><ul class="minis">${rest.map((a) => miniCard(a, env)).join('')}</ul>` : ''}
 </section>
+${svc.length ? renderBlocks([{ id: 'services', type: 'cards', layout: 'grid', title: 'خدمات', intro: s.about, items: svc.map((x) => ({ title: x.name, text: x.text })) }]) : ''}
 ${renderBlocks(blocks)}`;
-  const org = { '@type': 'Organization', '@id': `${base(env)}/#org`, name: s.brand, url: `${base(env)}/`, slogan: s.slogan, description: s.about, email: s.email || undefined, telephone: s.phone || undefined, logo: `${base(env)}${env.assets.url('og.png')}` };
+  // ⚠️ هر چه در دادهٔ ساختاریافته می‌آید روی صفحه هم دیده می‌شود (قاعدهٔ Google)
+  const org = { '@type': 'Organization', '@id': `${base(env)}/#org`, name: s.brand, url: `${base(env)}/`, slogan: s.slogan, description: s.about, disambiguatingDescription: s.aboutEn || undefined, email: s.email || undefined, telephone: s.phone || undefined, logo: `${base(env)}${env.assets.url('og.png')}`,
+    areaServed: { '@type': 'Country', name: 'Afghanistan' }, knowsLanguage: ['fa', 'ps', 'en'],
+    // ⚠️ خدمات + هر برنامهٔ منتشرشده و دسته‌اش؛ برنامهٔ تازه بی هیچ کارِ دستی این‌جا هم می‌آید
+    knowsAbout: [...new Set([...svc.map((x) => x.name), ...apps.map((a) => a.name), ...apps.map((a) => a.category).filter(Boolean)])].slice(0, 40),
+    hasOfferCatalog: svc.length ? { '@type': 'OfferCatalog', name: 'خدمات', itemListElement: svc.map((x) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: x.name, description: x.text || undefined, provider: { '@id': `${base(env)}/#org` } } })) } : undefined };
   const faq = faqFromBlocks(blocks);
   return layout(env, {
     title: '', description: s.heroText, path: '/', body, cls: 'is-home', scene: true,
@@ -461,7 +476,7 @@ ${links.length > 1 ? `
 ${paras.length ? `
 <section class="sec statement" id="about" aria-label="دربارهٔ برنامه">
   <h2 class="sr">${esc(app.name)} چه می‌کند؟</h2>
-  <p class="statement-big" aria-label="${esc(paras[0])}"><span aria-hidden="true">${words(paras[0])}</span></p>
+  <p class="statement-big"><span class="sr-only">${esc(paras[0])}</span><span aria-hidden="true">${words(paras[0])}</span></p>
   ${paras.length > 1 ? `<div class="prose">${paras.slice(1).map((p) => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('')}</div>` : ''}
 </section>` : ''}
 
@@ -574,7 +589,7 @@ ${plans.length && !env.static ? `
   const soft = {
     '@context': 'https://schema.org', '@type': 'SoftwareApplication', '@id': `${url}#app`, name: app.name, url,
     description: (app.tagline || app.description || '').slice(0, 300) || undefined, inLanguage: 'fa',
-    applicationCategory: 'BusinessApplication', operatingSystem: platforms.map((p) => osNames[p]).filter(Boolean).join(', ') || undefined,
+    applicationCategory: 'BusinessApplication', applicationSubCategory: app.category || undefined, keywords: [app.category, app.tagline].filter(Boolean).join('، ') || undefined, operatingSystem: platforms.map((p) => osNames[p]).filter(Boolean).join(', ') || undefined,
     softwareVersion: primary ? primary.version : undefined, datePublished: primary ? primary.publishedAt : undefined,
     fileSize: primary ? `${Math.max(1, Math.round(primary.size / 1024))} KB` : undefined,
     downloadUrl: primary && !env.static ? `${base(env)}/download/${app.slug}?p=${primary.platform}` : undefined,
@@ -688,4 +703,4 @@ function sitemap(env) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${esc(u.loc)}</loc>${u.mod ? `<lastmod>${esc(String(u.mod).slice(0, 10))}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
 }
 
-module.exports = { home, appPage, customPage, checkPage, errorPage, adminShell, sitemap, staticFile, newest, base, cta, SPEC_RULES, SOURCE_LABEL, rich };
+module.exports = { services, home, appPage, customPage, checkPage, errorPage, adminShell, sitemap, staticFile, newest, base, cta, SPEC_RULES, SOURCE_LABEL, rich };

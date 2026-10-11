@@ -1042,7 +1042,7 @@ async function main() {
     r = await req('GET', '/app/pump-yaqoubi');
     ok(!r.text.includes('/llms.txt') && !r.text.includes('.md"') && (await req('GET', '/llms.txt')).status === 404, 'با خاموش‌بودن «خواندن برای هوش مصنوعی» پیوندهایش هم در صفحه نمی‌آید');
     d3.settings.allowAI = true; pump3.plans = []; site3.db.touch();
-    ok((r.text.match(/class="art art-/g) || []).length === 9 && r.text.includes('aria-label="پمپ یعقوبی، بالای صفحه"') && /<p class="statement-big" aria-label="[^"]{20,}"><span aria-hidden="true">/.test(r.text), 'کاشی‌ها نگاره دارند؛ نوار بخش‌ها و متن معرفی نام خوانا برای صفحه‌خوان دارند');
+    ok((r.text.match(/class="art art-/g) || []).length === 9 && r.text.includes('aria-label="پمپ یعقوبی، بالای صفحه"') && /<p class="statement-big"><span class="sr-only">[^<]{20,}<\/span><span aria-hidden="true">/.test(r.text), 'کاشی‌ها نگاره دارند؛ نوار بخش‌ها و متن معرفی نام خوانا برای صفحه‌خوان دارند');
     const many = { apps: [], pages: [] };
     for (let i = 0; i < 40; i++) { many.apps.push({ id: `a${i}`, name: 'x', slug: 'a'.repeat(48) }); many.pages.push({ id: `p${i}`, title: 'x', slug: 'b'.repeat(48) }); }
     const t0 = Date.now();

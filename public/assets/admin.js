@@ -1322,12 +1322,18 @@
   ROUTES.seo = function () {
     return Promise.all([api('GET', '/seo'), api('GET', '/settings')]).then(function (res) {
       var seo = res[0], s = res[1].settings;
-      var save = function () { api('PUT', '/settings', { allowAI: s.allowAI, indexNow: s.indexNow, googleVerify: s.googleVerify, bingVerify: s.bingVerify }).then(function () { S.dirty = false; toast('ذخیره شد'); ROUTES.seo(); }, fail); };
+      var save = function () { api('PUT', '/settings', { allowAI: s.allowAI, indexNow: s.indexNow, googleVerify: s.googleVerify, bingVerify: s.bingVerify, services: s.services, aboutEn: s.aboutEn }).then(function () { S.dirty = false; toast('ذخیره شد'); ROUTES.seo(); }, fail); };
       var link = function (label, url) { return h('li', { class: 'row between' }, [h('span', { text: label }), h('a', { class: 'ltr small', href: url, target: '_blank', rel: 'noopener', text: url })]); };
       var last = seo.indexNow.last;
       clear(main);
       add(main, [
         head('جست‌وجو و هوش مصنوعی', 'سایت طوری ساخته شده که هم موتورهای جست‌وجو و هم دستیارهای هوش مصنوعی (ChatGPT، Claude، Gemini، Perplexity و …) آن را درست بخوانند.'),
+        h('div', { class: 'card' }, [h('h2', { text: 'خدماتِ شما' }),
+          h('p', { class: 'hint', text: 'وقتی کسی از ChatGPT، Claude، Gemini یا Google می‌پرسد «سایتِ سه‌بعدی» یا «سیستمِ پمپ» از کجا بگیرم، همین فهرست است که می‌خوانند. روی صفحهٔ اصلی هم دیده می‌شود. هر خط یک خدمت: «نام — توضیح». کلمه‌هایی بنویسید که مشتری واقعاً جست‌وجو می‌کند.' }),
+          h('div', { class: 'fields' }, [
+            field('خدمات (هر خط یکی، حداکثر ۱۲)', area(s, 'services', { rows: 7 })),
+            field('معرفیِ انگلیسی (برای هوش مصنوعی و جست‌وجوی انگلیسی)', area(s, 'aboutEn', { rows: 3, dir: 'ltr' })),
+          ])]),
         h('div', { class: 'grid2' }, [
           h('div', { class: 'card' }, [h('h2', { text: 'هوش مصنوعی' }), h('p', { class: 'hint', text: 'با روشن‌بودن این گزینه، خزنده‌های هوش مصنوعی اجازهٔ خواندن سایت را دارند و یک خلاصهٔ ساده از سایت و هر برنامه برایشان آماده است.' }),
             chk(s, 'allowAI', 'هوش مصنوعی‌ها اجازهٔ خواندن سایت را داشته باشند'),
