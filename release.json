@@ -1,5 +1,5 @@
 {
- "version": "2.1.0",
+ "version": "2.1.1",
  "files": [
   {
    "path": ".gitattributes",
@@ -54,7 +54,7 @@
   {
    "path": "package.json",
    "size": 488,
-   "sha256": "2785e1510dad6c720fc47be561d2a0bc805d7745cc30c998c0909fea6e9e3b2e"
+   "sha256": "ce6617bba82b529fe4d389ee2ad5d97b118346dc2e5a3823677919dcec254f20"
   },
   {
    "path": "preview/app/fitness-pro.html",
@@ -88,13 +88,13 @@
   },
   {
    "path": "public/assets/admin.css",
-   "size": 25530,
-   "sha256": "2b3b37537ca9b69b26f5005c527cb9bd6d06fa7987a21d0f3c9799b528d5c1f4"
+   "size": 27000,
+   "sha256": "49ae4ffab9529465c87a0d07d468474c77544a00311c399ee8c74181b57e9adf"
   },
   {
    "path": "public/assets/admin.js",
-   "size": 163775,
-   "sha256": "e621e36484f9eee3614f91f3739d1f6bf6688061fa3874c322e1e56bb9a53921"
+   "size": 165670,
+   "sha256": "66cb72de3958c9ffd0b6a963759f0a282e5b2f908c81d62a7409f5e28fe6721c"
   },
   {
    "path": "public/assets/favicon.svg",
