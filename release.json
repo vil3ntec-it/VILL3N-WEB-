@@ -173,8 +173,8 @@
   },
   {
    "path": "src/ai.js",
-   "size": 17561,
-   "sha256": "a43e30c81cfe94fabc98dd320a76e9694e48b9308ac1adb0fd529283f1674fa0"
+   "size": 17605,
+   "sha256": "7db773704fd44b90f087b4ee9af74a3d697d0fa6c5220abe9b43ae0169a96577"
   },
   {
    "path": "src/app.js",
@@ -263,8 +263,8 @@
   },
   {
    "path": "src/views.js",
-   "size": 49251,
-   "sha256": "bbb821a3625c1cd7c7565a94b303da64d7d7119240b96e7bc8a301391b3f409f"
+   "size": 49637,
+   "sha256": "166c517b3d78eedee889827c176539e9f40bc1179d027d7bb0ae512d479cbdaa"
   },
   {
    "path": "test/demo.js",

@@ -338,7 +338,8 @@ ${renderBlocks(blocks)}`;
   // ⚠️ هر چه در دادهٔ ساختاریافته می‌آید روی صفحه هم دیده می‌شود (قاعدهٔ Google)
   const org = { '@type': 'Organization', '@id': `${base(env)}/#org`, name: s.brand, url: `${base(env)}/`, slogan: s.slogan, description: s.about, disambiguatingDescription: s.aboutEn || undefined, email: s.email || undefined, telephone: s.phone || undefined, logo: `${base(env)}${env.assets.url('og.png')}`,
     areaServed: { '@type': 'Country', name: 'Afghanistan' }, knowsLanguage: ['fa', 'ps', 'en'],
-    knowsAbout: svc.length ? svc.map((x) => x.name) : undefined,
+    // ⚠️ خدمات + هر برنامهٔ منتشرشده و دسته‌اش؛ برنامهٔ تازه بی هیچ کارِ دستی این‌جا هم می‌آید
+    knowsAbout: [...new Set([...svc.map((x) => x.name), ...apps.map((a) => a.name), ...apps.map((a) => a.category).filter(Boolean)])].slice(0, 40),
     hasOfferCatalog: svc.length ? { '@type': 'OfferCatalog', name: 'خدمات', itemListElement: svc.map((x) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: x.name, description: x.text || undefined, provider: { '@id': `${base(env)}/#org` } } })) } : undefined };
   const faq = faqFromBlocks(blocks);
   return layout(env, {
@@ -588,7 +589,7 @@ ${plans.length && !env.static ? `
   const soft = {
     '@context': 'https://schema.org', '@type': 'SoftwareApplication', '@id': `${url}#app`, name: app.name, url,
     description: (app.tagline || app.description || '').slice(0, 300) || undefined, inLanguage: 'fa',
-    applicationCategory: 'BusinessApplication', operatingSystem: platforms.map((p) => osNames[p]).filter(Boolean).join(', ') || undefined,
+    applicationCategory: 'BusinessApplication', applicationSubCategory: app.category || undefined, keywords: [app.category, app.tagline].filter(Boolean).join('، ') || undefined, operatingSystem: platforms.map((p) => osNames[p]).filter(Boolean).join(', ') || undefined,
     softwareVersion: primary ? primary.version : undefined, datePublished: primary ? primary.publishedAt : undefined,
     fileSize: primary ? `${Math.max(1, Math.round(primary.size / 1024))} KB` : undefined,
     downloadUrl: primary && !env.static ? `${base(env)}/download/${app.slug}?p=${primary.platform}` : undefined,

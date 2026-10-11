@@ -185,7 +185,7 @@ function llms(env, full = false) {
   for (const a of env.apps) {
     const by = latestByPlatform(a);
     const latest = Object.entries(by).map(([p, v]) => `${PLATFORMS[p] || p} ${v.version}`).join('، ');
-    out.push(`- [${a.name}](${b}/app/${a.slug}.md): ${md(a.tagline) || 'برنامه'}${latest ? ` — آخرین نسخه: ${latest}` : ' — به‌زودی'}`);
+    out.push(`- [${a.name}](${b}/app/${a.slug}.md)${a.category ? ` (${one(a.category)})` : ''}: ${md(a.tagline) || 'برنامه'}${latest ? ` — آخرین نسخه: ${latest}` : ' — به‌زودی'}`);
   }
   if (!env.apps.length) out.push('- هنوز برنامه‌ای منتشر نشده است.');
   const { home, pages } = content(env);
