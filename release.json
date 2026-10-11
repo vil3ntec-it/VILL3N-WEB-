@@ -1,5 +1,5 @@
 {
- "version": "2.1.1",
+ "version": "2.1.2",
  "files": [
   {
    "path": ".gitattributes",
@@ -48,13 +48,13 @@
   },
   {
    "path": "docs/راهنما.md",
-   "size": 17342,
-   "sha256": "497bb6c606d58bf94b298acd67485e20ac31415dae8315296cb124aa23c60175"
+   "size": 17411,
+   "sha256": "aec06d3896ecd6a40bad70bf87960352489018c74d8afae44c33ad4cce7a275e"
   },
   {
    "path": "package.json",
    "size": 488,
-   "sha256": "ce6617bba82b529fe4d389ee2ad5d97b118346dc2e5a3823677919dcec254f20"
+   "sha256": "bfbe69d77ac9004b0dd412e79113cc010f3b93a3e744e59a56b2cc9701617824"
   },
   {
    "path": "preview/app/fitness-pro.html",
@@ -93,8 +93,8 @@
   },
   {
    "path": "public/assets/admin.js",
-   "size": 165670,
-   "sha256": "66cb72de3958c9ffd0b6a963759f0a282e5b2f908c81d62a7409f5e28fe6721c"
+   "size": 165902,
+   "sha256": "893083a153693f2b160c01e3242a396a23c4c7c7321f5c26903f41652937d30e"
   },
   {
    "path": "public/assets/favicon.svg",

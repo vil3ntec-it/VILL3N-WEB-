@@ -1389,7 +1389,8 @@
             row(r.reach && r.reach.status === 200, r.reach && r.reach.status === 200 ? 'سایت از اینترنت باز می‌شود.' : 'سایت از اینترنت باز نشد' + (r.reach && r.reach.error ? ' (' + r.reach.error + ')' : '') + '.'),
             row(r.same, r.same ? 'دامنه به همین سرور وصل است.' : 'جواب از این سرور نیامد؛ دامنه به جای دیگری وصل است یا تونل خاموش است.'),
             row(r.https, r.https ? 'نشانی سایت با https است.' : 'نشانی سایت در تنظیمات باید با https شروع شود.'),
-            row(r.adminSame, r.adminSame ? 'admin.' + host + ' هم به همین سرور وصل است.' : 'admin.' + host + ' هنوز وصل نیست (اختیاری؛ ' + host + '/admin همیشه کار می‌کند).'),
+            // ⚠️ admin.<دامنه> مالِ برنامهٔ مدیرِ کنترول سنتر است؛ پیشنهادِ وصل کردنش به این سایت آن را می‌شکست
+            row(true, r.adminSame ? 'admin.' + host + ' هم به همین سرور وصل است.' : 'پنلِ این سایت همیشه در ' + host + '/admin است. admin.' + host + ' را به این سایت ندهید؛ مالِ کنترول سنتر است.'),
           ]));
           e.target.disabled = false;
         }, function (er) { clear(result); fail(er); e.target.disabled = false; });
