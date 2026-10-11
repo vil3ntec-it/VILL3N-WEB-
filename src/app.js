@@ -239,6 +239,7 @@ function createSite({ dataDir, publicDir, config = {} }) {
   const site = { app, db, auth, files, assets };
   const indexNow = ai.indexNow(site, env);
   require('./admin')({ app, db, auth, files, assets, env, dataDir, config, VERSION, pages, indexNow });
+  require('./chat').install({ app, db, auth });
 
   let fontTimer = null;
   function start() {

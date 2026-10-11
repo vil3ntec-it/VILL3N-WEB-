@@ -970,3 +970,32 @@ img[data-zoom], .device-frame:has(img[data-zoom]) { cursor: zoom-in; }
 .review-av { grid-row: span 2; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-weight: 800; color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); }
 @media (min-width: 640px) { .reviews { grid-template-columns: repeat(2, 1fr); } .reviews[data-n="1"] { grid-template-columns: minmax(0, 720px); justify-content: center; } }
 @media (min-width: 1100px) { .reviews:not([data-n="1"]):not([data-n="2"]):not([data-n="4"]) { grid-template-columns: repeat(3, 1fr); } }
+
+/* ───── گفت‌وگو با مالک (دکمهٔ «پیام») ───── */
+.chat { position: fixed; z-index: 40; inset-inline-start: 16px; bottom: max(16px, env(safe-area-inset-bottom)); }
+.chat-fab { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 20px; border-radius: 999px; border: 0; background: var(--app, #3b6cff); color: #fff; font: inherit; font-weight: 800; cursor: pointer; box-shadow: 0 16px 40px -12px rgba(0, 0, 0, .55); }
+.chat-fab .ic { width: 22px; height: 22px; }
+.chat-dot { position: absolute; top: 8px; inset-inline-end: 10px; width: 11px; height: 11px; border-radius: 50%; background: #ff4d4f; box-shadow: 0 0 0 2px #fff; }
+.chat-box { position: absolute; bottom: 64px; inset-inline-start: 0; width: min(380px, calc(100vw - 32px)); height: min(560px, calc(100dvh - 120px)); display: grid; grid-template-rows: auto 1fr auto auto auto; background: linear-gradient(var(--card2), var(--card2)), var(--bg, #05070d); color: var(--ink, #fff); border: 1px solid var(--line, rgba(255, 255, 255, .12)); border-radius: 22px; overflow: hidden; box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .7); }
+.chat-box[hidden] { display: none; }
+.chat-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-block-end: 1px solid var(--line, rgba(255, 255, 255, .12)); }
+.chat-head div { display: grid; flex: 1; min-width: 0; }
+.chat-head small { color: var(--mute, #9aa3b5); font-size: .8rem; }
+.chat-x { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line, rgba(255, 255, 255, .12)); background: none; color: inherit; font-size: 24px; line-height: 1; cursor: pointer; }
+.chat-log { list-style: none; margin: 0; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; overscroll-behavior: contain; }
+.chat-log:empty::before { content: 'سؤال، سفارش یا هر چیزی که می‌خواهید بنویسید.'; color: var(--mute, #9aa3b5); font-size: .9rem; text-align: center; margin: auto; }
+.chat-msg { max-width: 82%; padding: 8px 12px; border-radius: 16px; line-height: 1.8; overflow-wrap: anywhere; }
+.chat-msg p { margin: 0; white-space: pre-wrap; }
+.chat-msg time { display: block; font-size: .72rem; opacity: .7; margin-top: 2px; }
+.chat-msg.is-me { align-self: flex-start; background: var(--app, #3b6cff); color: #fff; border-end-start-radius: 4px; }
+.chat-msg.is-owner { align-self: flex-end; background: var(--card2, rgba(255, 255, 255, .08)); border-end-end-radius: 4px; }
+.chat-intro { display: grid; gap: 6px; padding: 0 14px 8px; }
+.chat-intro[hidden] { display: none; }
+.chat-intro input, .chat-send textarea { width: 100%; min-width: 0; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line, rgba(255, 255, 255, .14)); background: var(--bg, #05070d); color: inherit; font: inherit; }
+.chat-send { display: flex; gap: 8px; align-items: end; padding: 10px 14px; border-block-start: 1px solid var(--line, rgba(255, 255, 255, .12)); }
+.chat-send textarea { flex: 1; resize: none; max-height: 120px; }
+.chat-send .btn { min-height: 44px; padding-inline: 16px; }
+.chat-err { margin: 0; padding: 0 14px 10px; color: #ff6b6b; font-size: .85rem; }
+.chat-err:empty { display: none; }
+@media (max-width: 520px) { .chat-fab span { display: none; } .chat-fab { padding: 0 16px; } }
+@media print { .chat { display: none; } }

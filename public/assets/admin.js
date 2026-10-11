@@ -45,6 +45,7 @@
 
   var ICON = {
     home: '<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>', apps: '<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
+    chat: '<path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H10l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M8 10h8M8 13h5"/>',
     cart: '<path d="M4 5h2l2 11h10l2-8H7"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/>', key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9m-3 3 2.5 2.5"/>',
     tag: '<path d="M4 4h7l9 9-7 7-9-9z"/><circle cx="8.5" cy="8.5" r="1.4"/>', gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M5.6 18.4l2.1-2.1m8.6-8.6 2.1-2.1"/>',
     link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>', shield: '<path d="M12 3 4.5 6v5.5c0 4.6 3.1 8 7.5 9.5 4.4-1.5 7.5-4.9 7.5-9.5V6z"/>',
@@ -169,7 +170,7 @@
   }
 
   /* ───── قالب و مسیرها ───── */
-  var NAV = [['', 'داشبورد', 'home'], ['apps', 'برنامه‌ها', 'apps'], ['home', 'صفحهٔ اصلی', 'layout'], ['pages', 'صفحه‌ها', 'pages'], ['orders', 'سفارش‌ها', 'cart'], ['licenses', 'اشتراک‌ها', 'key'], ['coupons', 'کدهای تخفیف', 'tag'], ['seo', 'سئو و هوش مصنوعی', 'search'], ['deploy', 'اتصال و استقرار', 'link'], ['settings', 'تنظیمات', 'gear'], ['security', 'امنیت', 'shield'], ['backup', 'پشتیبان', 'box']];
+  var NAV = [['', 'داشبورد', 'home'], ['apps', 'برنامه‌ها', 'apps'], ['home', 'صفحهٔ اصلی', 'layout'], ['pages', 'صفحه‌ها', 'pages'], ['orders', 'سفارش‌ها', 'cart'], ['chats', 'پیام‌ها', 'chat'], ['licenses', 'اشتراک‌ها', 'key'], ['coupons', 'کدهای تخفیف', 'tag'], ['seo', 'سئو و هوش مصنوعی', 'search'], ['deploy', 'اتصال و استقرار', 'link'], ['settings', 'تنظیمات', 'gear'], ['security', 'امنیت', 'shield'], ['backup', 'پشتیبان', 'box']];
   var main, side, shellEl, menuBtn, topTitle;
   /* ───── منوی گوشی و تبلت: سه‌خط ← کشوی بخش‌ها ─────
      زدن روی یک بخش کشو را نمی‌بندد؛ فقط ضربدر، زدن روی صفحهٔ بیرون یا Esc می‌بندد. */
@@ -216,6 +217,7 @@
     if (!ROUTES[name]) name = '';
     lastHash = location.hash;
     S.onDirty = null;
+    if (S.stop) { S.stop(); S.stop = null; } // تایمرِ صفحهٔ قبلی (مثلاً پیام‌ها)
     Array.prototype.forEach.call(side.querySelectorAll('a.nav'), function (a) { var on = a.getAttribute('data-r') === name; a.classList.toggle('is-on', on); if (on) { a.setAttribute('aria-current', 'page'); topTitle.textContent = a.textContent; } else a.removeAttribute('aria-current'); });
     loading();
     Promise.resolve(ROUTES[name](parts.slice(1))).catch(function (e) { clear(main).appendChild(h('div', { class: 'empty' }, [h('b', { text: 'این بخش باز نشد' }), e.message])); });
@@ -1257,6 +1259,71 @@
 
   /* ───── اشتراک‌ها ───── */
   var LIC = { active: ['فعال', 'ok'], expired: ['تمام‌شده', 'warn'], revoked: ['باطل', 'bad'] };
+  /* ───── پیام‌های سایت ─────
+     همان گفت‌وگوهایی که در تلگرام و کنترول سنتر هم دیده می‌شوند؛ جواب از هر جا، درجا به بازدیدکننده می‌رسد. */
+  ROUTES.chats = function (p) {
+    var current = p && p[0] ? p[0] : '', list = h('div', { class: 'chat-list' }), pane = h('div', { class: 'chat-pane' }), chats = [], timer = null, alive = true;
+    S.stop = function () { alive = false; clearTimeout(timer); };
+    function ago(t) { return dateTime(t); }
+    function drawList() {
+      clear(list);
+      if (!chats.length) { list.appendChild(h('div', { class: 'empty' }, [h('b', { text: 'هنوز پیامی نیامده' }), 'وقتی کسی از دکمهٔ «پیام» در سایت بنویسد، این‌جا می‌آید.'])); return; }
+      chats.forEach(function (c) {
+        list.appendChild(h('a', { class: 'chat-row' + (c.id === current ? ' is-on' : '') + (c.unread ? ' is-new' : ''), href: '#/chats/' + c.id }, [
+          h('div', { class: 'row between' }, [h('b', { text: c.name }), c.unread ? h('span', { class: 'badge warn', text: fa(c.unread) }) : h('small', { class: 'mute', text: c.status === 'closed' ? 'بسته' : '' })]),
+          h('span', { class: 'mute small', text: (c.lastFrom === 'owner' ? 'شما: ' : '') + c.lastMessage }),
+          h('small', { class: 'mute', text: ago(c.updatedAt) }),
+        ]));
+      });
+    }
+    function drawPane(data) {
+      clear(pane);
+      if (!data) { pane.appendChild(h('p', { class: 'mute', text: 'یک گفت‌وگو را انتخاب کنید.' })); return; }
+      var c = data.chat;
+      var log = h('ol', { class: 'chat-log' }, data.messages.map(function (m) { return h('li', { class: 'chat-msg is-' + (m.from === 'owner' ? 'me' : 'them') }, [h('p', { text: m.body }), h('time', { text: dateTime(m.at) })]); }));
+      var box = h('textarea', { rows: 3, placeholder: 'جواب… (Enter می‌فرستد، Shift+Enter خطِ تازه)', 'aria-label': 'جواب' });
+      var send = function () {
+        var t = box.value.trim(); if (!t) return;
+        btn.disabled = true;
+        api('POST', '/chats/' + c.id, { text: t }).then(function () { box.value = ''; btn.disabled = false; refresh(); }, function (e) { btn.disabled = false; fail(e); });
+      };
+      box.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+      var btn = h('button', { class: 'btn main', type: 'button', text: 'فرستادن', onclick: send });
+      add(pane, [
+        h('div', { class: 'chat-top row between' }, [
+          h('a', { class: 'btn sm back-mobile', href: '#/chats', text: 'همهٔ پیام‌ها' }),
+          h('div', { class: 'grow' }, [h('b', { text: c.name }), c.contact ? h('div', { class: 'small mute ltr', text: c.contact }) : null, c.page ? h('div', { class: 'small mute ltr', text: 'از صفحهٔ ' + c.page }) : null]),
+          h('div', { class: 'row' }, [
+            h('button', { class: 'btn sm', type: 'button', text: c.status === 'closed' ? 'باز کردن' : 'بستن', onclick: function () { api('POST', '/chats/' + c.id + '/status', { status: c.status === 'closed' ? 'open' : 'closed' }).then(refresh, fail); } }),
+            h('button', { class: 'btn sm danger', type: 'button', text: 'پاک کردن', onclick: function () { if (!window.confirm('این گفت‌وگو برای همیشه پاک شود؟')) return; api('DELETE', '/chats/' + c.id).then(function () { location.hash = '#/chats'; }, fail); } }),
+          ]),
+        ]),
+        log,
+        h('div', { class: 'chat-reply' }, [box, btn]),
+      ]);
+      log.scrollTop = log.scrollHeight;
+      if (!box.value) box.focus({ preventScroll: true });
+    }
+    var lastSig = '';
+    function refresh() {
+      return api('GET', '/chats').then(function (r) {
+        if (!alive) return;
+        chats = r.chats; drawList();
+        if (!current) { drawPane(null); return; }
+        return api('GET', '/chats/' + current).then(function (d) {
+          if (!alive) return;
+          var sig = d.messages.length + ':' + (d.messages.length ? d.messages[d.messages.length - 1].id : '') + d.chat.status;
+          if (sig !== lastSig || !pane.firstChild) { lastSig = sig; var typing = pane.querySelector('textarea'); var draft = typing ? typing.value : ''; drawPane(d); var nb = pane.querySelector('textarea'); if (nb && draft) nb.value = draft; }
+        });
+      }).catch(function (e) { if (alive) fail(e); });
+    }
+    function tick() { timer = setTimeout(function () { refresh().then(function () { if (alive) tick(); }); }, 5000); }
+    clear(main);
+    add(main, [head('پیام‌ها', 'گفت‌وگو با بازدیدکننده‌های سایت. جوابِ شما همان لحظه در پنجرهٔ پیامِ سایت به او می‌رسد. اگر کنترول سنتر وصل باشد، همین گفت‌وگوها آن‌جا و در تلگرام هم هست.'),
+      h('div', { class: 'chat-grid' + (current ? ' has-pane' : '') }, [list, pane])]);
+    return refresh().then(tick);
+  };
+
   ROUTES.licenses = function () {
     return api('GET', '/licenses').then(function (r) {
       var lics = r.licenses, q = { text: '' }, list = h('div', { class: 'list' });
@@ -1390,8 +1457,11 @@
         h('div', { class: 'card' }, [h('h2', { text: 'دکمه‌های سفارش و پرسش به کجا بروند؟' }),
           h('p', { class: 'hint', text: 'بازدیدکننده با زدنِ «سفارش» یا «پرسیدن دربارهٔ این برنامه» به همین راه می‌رود. اگر خانهٔ آن راه در بالا خالی باشد، اولین راهِ پرشده به کار می‌رود.' }),
           h('div', { class: 'fields c2' }, [field('راهِ اصلیِ تماس', sel(s, 'contactChannel', { whatsapp: 'واتساپ', telegram: 'تلگرام', phone: 'تماسِ تلفنی', email: 'ایمیل' }))])]),
+        h('div', { class: 'card' }, [h('h2', { text: 'پنجرهٔ «پیام» در سایت' }),
+          h('p', { class: 'hint', text: 'بازدیدکننده از دکمهٔ «پیام» پایینِ صفحه می‌نویسد و جوابِ شما همان‌جا به او می‌رسد. پیام‌ها در بخشِ «پیام‌ها» هستند.' }),
+          h('div', { class: 'fields c2' }, [h('div', { class: 'field full' }, chk(s, 'chatEnabled', 'دکمهٔ «پیام» روی سایت باشد')), field('جملهٔ زیرِ عنوانِ پنجره', inp(s, 'chatWelcome', { maxlength: 120 }), null, 'full')])]),
         h('div', { class: 'card' }, [h('h2', { text: 'اعلانِ تلگرام' }),
-          h('p', { class: 'hint', text: 'هر سفارشِ تازه همان لحظه در تلگرامِ خودتان می‌آید.' }),
+          h('p', { class: 'hint', text: 'هر سفارشِ تازه و هر پیامِ سایت همان لحظه در تلگرامِ خودتان می‌آید. اگر سایت از کنترول سنتر اجرا می‌شود، پیام‌ها را کنترول سنتر به تلگرام می‌برد و همان‌جا با Reply جواب می‌دهید.' }),
           h('ol', { class: 'steps small' }, [
             h('li', { text: 'در تلگرام با ‎@BotFather‎ یک ربات بسازید (‎/newbot‎) و توکنی را که می‌دهد این‌جا بچسبانید.' }),
             h('li', { text: 'ربات را در تلگرام باز کنید و Start را بزنید (یا آن را به گروهِ خودتان اضافه کنید).' }),
