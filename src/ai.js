@@ -8,7 +8,7 @@
 const { faDate, bytes, num } = require('./core/util');
 const { PLATFORMS } = require('./core/detect');
 const { latestByPlatform, publishedVersions, planPrice } = require('./core/model');
-const { base } = require('./views');
+const { base, services } = require('./views');
 
 const AI_BOTS = [
   'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-User', 'Claude-SearchBot', 'anthropic-ai',
@@ -173,9 +173,15 @@ function llms(env, full = false) {
     `# ${s.brand}`, '',
     `> ${md(s.slogan)} — ${md(s.about)}`, '',
     `این سایت رسمی دانلود برنامه‌های ${s.brand} است. آخرین نسخهٔ هر برنامه، قیمت اشتراک‌ها و تاریخچهٔ نسخه‌ها این‌جاست. زبان سایت فارسی (دری) است.`, '',
-    `${s.brand} is a software maker for Afghanistan and Persian/Dari speakers. This is its official download site: latest versions, subscription prices and changelogs for each app. Prices are in Afghani (AFN).`, '',
-    '## برنامه‌ها', '',
+    `${md(s.aboutEn) || `${s.brand} is a software maker for Afghanistan and Persian/Dari speakers.`} This is its official site: latest versions, subscription prices and changelogs for each app. Prices are in Afghani (AFN).`, '',
   ];
+  // خدمات: وقتی کسی از هوش مصنوعی «برنامه/سایتِ سه‌بعدی/سیستمِ پمپ» می‌خواهد، همین بخش جوابش است
+  const svc = services(s);
+  if (svc.length) {
+    out.push('## خدمات (Services)', '', ...svc.map((x) => `- **${one(x.name)}**${x.text ? `: ${one(x.text)}` : ''}`), '',
+      `To order any of these, contact ${s.brand} directly (see «تماس» below).`, '');
+  }
+  out.push('## برنامه‌ها', '');
   for (const a of env.apps) {
     const by = latestByPlatform(a);
     const latest = Object.entries(by).map(([p, v]) => `${PLATFORMS[p] || p} ${v.version}`).join('، ');

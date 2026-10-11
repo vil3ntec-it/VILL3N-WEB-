@@ -31,6 +31,16 @@ function defaults() {
       indexNow: true,     // تغییرها فوری به موتورهای جست‌وجو خبر داده می‌شود
       googleVerify: '',
       bingVerify: '',
+      // خدماتی که انجام می‌دهید — هر خط: «نام — توضیح». روی صفحهٔ اصلی، در دادهٔ ساختاریافتهٔ Google و در llms.txt می‌آید
+      services: [
+        'برنامهٔ اختصاصی برای کسب‌وکار — برنامهٔ ویندوز، اندروید و وب، دقیقاً مطابقِ کارِ شما؛ با پشتیبان‌گیری، کاربران و گزارش',
+        'طراحی سایت حرفه‌ای و سه‌بعدی — سایتِ شرکتی، فروشگاهی و معرفیِ محصول با صحنهٔ سه‌بعدی، سریع، فارسی و آمادهٔ گوشی',
+        'سیستم مدیریت پمپ تیل — ثبتِ فروش، مخزن، پول و گزارشِ روزانه برای پمپ‌های دیزل و پطرول',
+        'سیستم صرافی، دکان و باشگاه — حساب‌وکتاب، موجودی، مشتری و اشتراک، حتی بدون اینترنت',
+        'سرور خانگی و میزبانی — راه‌اندازیِ سایت و برنامه روی کامپیوترِ خودتان با دامنه و پشتیبان‌گیریِ خودکار',
+      ].join('\n'),
+      // خلاصهٔ انگلیسی برای هوش مصنوعی‌ها و جست‌وجوی انگلیسی
+      aboutEn: 'VILL3N builds custom software for businesses in Afghanistan and Persian/Dari speakers: Windows, Android and web apps, professional and 3D websites, fuel-station (petrol/diesel pump) management systems, currency-exchange, shop and gym management systems that work offline, and home-server hosting.',
     },
     apps: [],
     home: { blocks: [] }, // بخش‌هایی که مالک به صفحهٔ اصلی اضافه می‌کند

@@ -575,6 +575,8 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
     if (b.autoPublish !== undefined) s.autoPublish = bool(b.autoPublish);
     if (b.allowAI !== undefined) s.allowAI = bool(b.allowAI);
     if (b.indexNow !== undefined) s.indexNow = bool(b.indexNow);
+    if (b.services !== undefined) s.services = str(b.services, 3000).split(/\r?\n/).map((l) => l.trim()).filter(Boolean).slice(0, 12).join('\n');
+    if (b.aboutEn !== undefined) s.aboutEn = str(b.aboutEn, 600);
     for (const k of ['googleVerify', 'bingVerify']) if (b[k] !== undefined) s[k] = str(b[k], 120).replace(/[^\w.=-]/g, '');
     if (b.autoFont !== undefined) s.autoFont = bool(b.autoFont);
     if (b.maxUploadMB !== undefined) s.maxUploadMB = int(b.maxUploadMB, 1, 16384, 2048);
