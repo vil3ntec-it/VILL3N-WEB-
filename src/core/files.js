@@ -7,7 +7,9 @@ const { id, str } = require('./util');
 const { HttpError } = require('./http');
 const { detect, extOf, ALLOWED_EXT, EXT_PLATFORM } = require('./detect');
 
-const VIDEO_MAX = 60 * 1024 * 1024; // سقف حجم ویدیوی هر بخش
+const VIDEO_MAX = 2 * 1024 * 1024 * 1024; // سقف حجم ویدیوی هر بخش (تکه‌تکه می‌آید، پس از سقفِ ۱۰۰ مگابایتیِ تونل رد می‌شود)
+const VIDEO_DIRECT_MAX = 90 * 1024 * 1024; // ویدیویی که یک‌جا (بی تکه) می‌آید؛ بزرگ‌تر فقط تکه‌تکه
+const IMAGE_MAX = 40 * 1024 * 1024;       // عکسِ 4K با کیفیتِ کامل (PNG/WebP بی‌فشرده‌سازیِ دوباره)
 const IMAGE_TYPES = [
   { ext: 'png', test: (b) => b.length > 8 && b.readUInt32BE(0) === 0x89504e47 },
   { ext: 'jpg', test: (b) => b.length > 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff },
@@ -137,7 +139,7 @@ class Files {
 
   saveImage(buf) {
     if (!buf || buf.length < 24) throw new HttpError(400, 'تصویر خالی است');
-    if (buf.length > 6 * 1024 * 1024) throw new HttpError(413, 'تصویر باید کمتر از ۶ مگابایت باشد');
+    if (buf.length > IMAGE_MAX) throw new HttpError(413, `تصویر باید کمتر از ${IMAGE_MAX / 1048576} مگابایت باشد`);
     const kind = IMAGE_TYPES.find((t) => t.test(buf));
     if (!kind) throw new HttpError(400, 'فقط تصویر PNG، JPG، WebP یا GIF پذیرفته می‌شود');
     const name = `${id(10)}.${kind.ext}`;
@@ -150,13 +152,27 @@ class Files {
   // ویدیوی بخش «ویدیو»: فقط MP4 و WebM، از روی خودِ بایت‌های فایل (نه نام یا نوعِ اعلام‌شده). کنار تصویرها نگه داشته می‌شود.
   saveVideo(buf) {
     if (!buf || buf.length < 32) throw new HttpError(400, 'ویدیو خالی است');
-    if (buf.length > VIDEO_MAX) throw new HttpError(413, `ویدیو باید کمتر از ${VIDEO_MAX / 1048576} مگابایت باشد`);
+    if (buf.length > VIDEO_DIRECT_MAX) throw new HttpError(413, `ویدیوی بزرگ‌تر از ${VIDEO_DIRECT_MAX / 1048576} مگابایت را تکه‌تکه بفرستید (پنل خودش این کار را می‌کند)`);
     const mp4 = buf.toString('latin1', 4, 8) === 'ftyp';
     const webm = buf[0] === 0x1a && buf[1] === 0x45 && buf[2] === 0xdf && buf[3] === 0xa3;
     if (!mp4 && !webm) throw new HttpError(400, 'فقط ویدیوی MP4 یا WebM پذیرفته می‌شود');
     const name = `${id(10)}.${mp4 ? 'mp4' : 'webm'}`;
     fs.writeFileSync(path.join(this.imagesDir, name), buf);
     return { name, size: buf.length, mime: mp4 ? 'video/mp4' : 'video/webm' };
+  }
+
+  // ویدیوی بزرگ که تکه‌تکه روی دیسک رسیده: نوع از روی خودِ بایت‌ها، بعد جابه‌جا کنارِ تصویرها
+  saveVideoFile(tmp, size) {
+    const head = Buffer.alloc(12);
+    const fd = fs.openSync(tmp, 'r');
+    try { fs.readSync(fd, head, 0, 12, 0); } finally { fs.closeSync(fd); }
+    const mp4 = head.toString('latin1', 4, 8) === 'ftyp';
+    const webm = head[0] === 0x1a && head[1] === 0x45 && head[2] === 0xdf && head[3] === 0xa3;
+    if (!mp4 && !webm) { fs.unlink(tmp, () => {}); throw new HttpError(400, 'فقط ویدیوی MP4 یا WebM پذیرفته می‌شود'); }
+    const name = `${id(10)}.${mp4 ? 'mp4' : 'webm'}`;
+    const dest = path.join(this.imagesDir, name);
+    try { fs.renameSync(tmp, dest); } catch (_) { fs.copyFileSync(tmp, dest); fs.unlinkSync(tmp); }
+    return { name, size, mime: mp4 ? 'video/mp4' : 'video/webm' };
   }
 
   removeImage(name) { if (name) fs.unlink(this.imagePath(name), () => {}); }
@@ -251,4 +267,4 @@ class Files {
   }
 }
 
-module.exports = { Files, hashFile, imageSize, VIDEO_MAX };
+module.exports = { Files, hashFile, imageSize, VIDEO_MAX, VIDEO_DIRECT_MAX, IMAGE_MAX };

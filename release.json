@@ -1,5 +1,5 @@
 {
- "version": "2.3.0",
+ "version": "2.4.0",
  "files": [
   {
    "path": ".gitattributes",
@@ -53,8 +53,8 @@
   },
   {
    "path": "package.json",
-   "size": 513,
-   "sha256": "9d699ed7f51e2a83650841ce658f10ca6e732ffa4534c559d7d910c1b41627a2"
+   "size": 535,
+   "sha256": "591842dcbd6f31160b1e42753e0abaad75e7740e9165f25ce6910edae00b21a5"
   },
   {
    "path": "preview/app/fitness-pro.html",
@@ -93,8 +93,8 @@
   },
   {
    "path": "public/assets/admin.js",
-   "size": 169905,
-   "sha256": "6162b58085a5b1f002d40fbbbae2b00ba901b686e03b90c600e6494eb7faa2a2"
+   "size": 171863,
+   "sha256": "6b38e170fad3b5df8f38d1106b839256fd21d1a6465ea7b229007212b1a20b40"
   },
   {
    "path": "public/assets/favicon.svg",
@@ -113,13 +113,13 @@
   },
   {
    "path": "public/assets/site.css",
-   "size": 86432,
-   "sha256": "2e0eb0079fe48416bc99925a9a558d532475c4839671912e19184a335ff1d1c1"
+   "size": 87496,
+   "sha256": "42699a95df4bcbdd9974c834af88d404f171beb0fcc7fbf64ab8c3ed8c55de68"
   },
   {
    "path": "public/assets/site.js",
-   "size": 27514,
-   "sha256": "f60b1e2539ad702f6484c2f9ef8e85f999a6ea8880e2316b5f0ac6928e382257"
+   "size": 29439,
+   "sha256": "1e80abdcea260bac3cdb99434e87b438b666a74c73bc01d33057564d8ab07136"
   },
   {
    "path": "public/assets/theme.js",
@@ -168,8 +168,8 @@
   },
   {
    "path": "src/admin.js",
-   "size": 51417,
-   "sha256": "cf802587e51897fb3ba7e07ae96cad5d1b12bdb9b120d79846dbf97b55182e7b"
+   "size": 53273,
+   "sha256": "f8ae81e54730256a06f80d3f2eb34b91d37ad78b16357edd94141bdc5df0c39a"
   },
   {
    "path": "src/ai.js",
@@ -183,8 +183,8 @@
   },
   {
    "path": "src/blocks.js",
-   "size": 8460,
-   "sha256": "9ec98272f173987cc50059094003d8a00f7081e785d75f4587de324ed731e785"
+   "size": 8470,
+   "sha256": "0fc4307b03982acc2d12161c7b922880a65559064a4ba5b2e7f718568bb4280b"
   },
   {
    "path": "src/core/auth.js",
@@ -203,8 +203,8 @@
   },
   {
    "path": "src/core/files.js",
-   "size": 12970,
-   "sha256": "dc7db2debd842901f83c9710af8d6ccf4fb337cf9e89098931c248a5a99b437f"
+   "size": 14426,
+   "sha256": "01dbe5c689b70bf95703b0cc2fe77cf57344be5f74acfe35834338ba94e5e281"
   },
   {
    "path": "src/core/http.js",
@@ -213,8 +213,8 @@
   },
   {
    "path": "src/core/model.js",
-   "size": 36152,
-   "sha256": "c45dc8e8a9d5d9cd85e5b1097dae36cf26418389aea2fc160b772ff99b5a4b76"
+   "size": 36451,
+   "sha256": "5215f93aa938dea74cd3a21e6deb59a7ca21b6e68be95306394dde8b8ee1e112"
   },
   {
    "path": "src/core/telegram.js",
@@ -268,8 +268,8 @@
   },
   {
    "path": "src/views.js",
-   "size": 50584,
-   "sha256": "8088b35338d686c99c8d4e572b48b587a68467567afdfbdcf1c5cb5b1e90cbf3"
+   "size": 51034,
+   "sha256": "8417a0585e69765063e9d83a15b6706c7d36633970ba5c15b325814d27b5642f"
   },
   {
    "path": "test/demo.js",
@@ -282,9 +282,14 @@
    "sha256": "7ef4368c2106d65858f43483b4eb99a34dea7d2ac683cec1a5259350769a23e8"
   },
   {
+   "path": "test/media.js",
+   "size": 6176,
+   "sha256": "9eaeeb27ee48c7a001dac9f94ee161cbfdba36a518bbf6cff7ad3061f8395539"
+  },
+  {
    "path": "test/smoke.js",
-   "size": 126629,
-   "sha256": "02f99256236ddfa96a5e6d569e39729bf5668c1791be757f329b7704494213bd"
+   "size": 126684,
+   "sha256": "5717ef5ef9659c93082675902081fd26470ffc888eefbdac559f501f61a951ae"
   },
   {
    "path": "test/telegram.js",

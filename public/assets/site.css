@@ -698,9 +698,16 @@ dialog::backdrop { background: rgba(0, 0, 0, .7); }
 .order-err { color: var(--bad); font-size: .95rem; }
 .order-err:empty { display: none; }
 .order-no { font-size: 1.1rem; } .order-no b { font-size: 1.5rem; font-weight: 900; color: var(--accent); }
-.zoom { max-width: 96vw; max-height: 94vh; padding: 0; border: 0; background: none; overflow: visible; }
+.zoom { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(0, 0, 0, .96); overflow: hidden; }
+.zoom::backdrop { background: rgba(0, 0, 0, .6); }
 .zoom:focus-visible { outline: none; }
-.zoom img { max-width: 96vw; max-height: 94vh; border-radius: 14px; cursor: zoom-out; }
+.zoom-pane { width: 100%; height: 100%; display: grid; place-items: center; overflow: auto; overscroll-behavior: contain; touch-action: pan-x pan-y pinch-zoom; }
+.zoom-pane img { max-width: 96vw; max-height: 90dvh; width: auto; height: auto; object-fit: contain; border-radius: 10px; cursor: zoom-in; image-rendering: auto; }
+.zoom.is-full .zoom-pane { display: block; }
+.zoom.is-full .zoom-pane img { max-width: none; max-height: none; border-radius: 0; cursor: zoom-out; }
+.zoom-x { position: absolute; top: max(12px, env(safe-area-inset-top)); inset-inline-end: 14px; z-index: 2; width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .25); background: rgba(0, 0, 0, .55); color: #fff; font-size: 28px; line-height: 1; cursor: pointer; }
+.zoom-hint { position: absolute; bottom: max(12px, env(safe-area-inset-bottom)); inset-inline: 0; margin: 0; text-align: center; color: rgba(255, 255, 255, .75); font-size: .85rem; pointer-events: none; }
+img[data-zoom], .device-frame:has(img[data-zoom]) { cursor: zoom-in; }
 
 /* ───────────── صفحه‌های تک‌بخشی و صفحه‌های دلخواه ───────────── */
 .page-hero { position: relative; display: grid; gap: 18px; justify-items: start; padding: clamp(48px, 8vw, 120px) var(--gutter) clamp(20px, 3vw, 40px); }

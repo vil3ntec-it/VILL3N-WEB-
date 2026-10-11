@@ -631,7 +631,7 @@
       var box2 = h('div', { class: 'imgbox' }), busy = false;
       function upload(file) {
         if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) return toast('فقط تصویر PNG، JPG، WebP یا GIF پذیرفته می‌شود', true);
-        if (file.size > 6 * 1024 * 1024) return toast('تصویر باید کمتر از ۶ مگابایت باشد', true);
+        if (file.size > 40 * 1024 * 1024) return toast('تصویر باید کمتر از ۴۰ مگابایت باشد', true);
         var id = b.id, first;
         busy = true; paint();
         if (opt.isSaved(id)) first = Promise.resolve(true);
@@ -667,7 +667,7 @@
               h('button', { class: 'btn' + (b.image ? '' : ' main'), type: 'button', 'data-f': 'img', disabled: busy, text: busy ? 'در حال بارگذاری…' : b.image ? 'عوض کردن تصویر' : 'گذاشتن تصویر', onclick: pick }),
               b.image ? h('button', { class: 'btn danger', type: 'button', disabled: busy, text: 'برداشتن تصویر', onclick: remove }) : null,
             ]),
-            h('small', { class: 'mute', text: 'PNG، JPG، WebP یا GIF، تا ۶ مگابایت.' }),
+            h('small', { class: 'mute', text: 'PNG، JPG، WebP یا GIF، تا ۴۰ مگابایت (عکسِ 4K با کیفیتِ کامل می‌ماند).' }),
             opt.isSaved(b.id) ? null : h('small', { class: 'warn-note', text: 'این بخش هنوز ذخیره نشده است. با انتخاب تصویر، اول همهٔ تغییرهای این صفحه ذخیره می‌شود و بعد تصویر بارگذاری می‌شود.' }),
           ]),
         ]);
@@ -678,9 +678,10 @@
 
     // بارگذاری ویدیو و تصویر پیش‌نمایشِ بخش «ویدیو» (همان روال تصویر: بخش اول ذخیره می‌شود، بعد فایل می‌رود)
     function fileBox(b, c) {
-      var box2 = h('div', { class: 'imgbox' }), busy = false;
+      var box2 = h('div', { class: 'imgbox' }), busy = false, progress = 0;
       function upload(file) {
         if (!c.type.test(file.type)) return toast(c.badType, true);
+        progress = 0;
         if (file.size > c.max) return toast(c.tooBig, true);
         var id = b.id, first;
         busy = true; paint();
@@ -689,7 +690,22 @@
         first.then(function (ok) {
           if (!ok) return null;
           if (!opt.isSaved(id)) { toast('این بخش ذخیره نشد؛ فایل بارگذاری نشد.', true); return null; }
-          return api('PUT', opt.base + '/blocks/' + id + '/' + c.key, file, true);
+          if (c.key !== 'video') return api('PUT', opt.base + '/blocks/' + id + '/' + c.key, file, true);
+          // ویدیو تکه‌تکه می‌رود تا از سقفِ ۱۰۰ مگابایتیِ تونل رد شود؛ پیشرفت روی همان کادر دیده می‌شود
+          return api('POST', opt.base + '/blocks/' + id + '/video-upload', { size: file.size }).then(function (st) {
+            var i = 0, off = 0;
+            var step = function (tries) {
+              if (off >= file.size) return api('POST', '/uploads/' + st.uploadId + '/finish', {});
+              return api('PUT', '/uploads/' + st.uploadId + '?i=' + i, file.slice(off, off + st.chunk), true).then(function (r) {
+                off = r.received; i++; progress = Math.round(off / file.size * 100); paint();
+                return step(0);
+              }, function (e) {
+                if (!e.status && tries < 3) return new Promise(function (ok) { setTimeout(ok, 1500 * (tries + 1)); }).then(function () { return step(tries + 1); });
+                api('DELETE', '/uploads/' + st.uploadId).catch(function () {}); throw e;
+              });
+            };
+            return step(0);
+          });
         }).then(function (r) {
           busy = false;
           var now = list().filter(function (x) { return x.id === id; })[0];
@@ -710,7 +726,7 @@
           has ? c.preview(has) : h('div', { class: 'imgbox-none' }, [ic('img'), h('span', { text: c.none })]),
           h('div', { class: 'imgbox-side' }, [
             h('div', { class: 'row' }, [
-              h('button', { class: 'btn' + (has ? '' : ' main'), type: 'button', 'data-f': c.key, disabled: busy, text: busy ? 'در حال بارگذاری…' : has ? c.change : c.put, onclick: pick }),
+              h('button', { class: 'btn' + (has ? '' : ' main'), type: 'button', 'data-f': c.key, disabled: busy, text: busy ? (progress ? 'در حال بارگذاری… ' + fa(progress) + '٪' : 'در حال بارگذاری…') : has ? c.change : c.put, onclick: pick }),
               has ? h('button', { class: 'btn danger', type: 'button', disabled: busy, text: c.take, onclick: remove }) : null,
             ]),
             h('small', { class: 'mute', text: c.hint + (has && has.size ? ' حجم این فایل: ' + bytes(has.size) + '.' : '') }),
@@ -721,10 +737,10 @@
       paint();
       return box2;
     }
-    var vmax = (S.meta && S.meta.videoMaxMB) || 60;
-    var VIDEO_BOX = { key: 'video', type: /^video\/(mp4|webm)$/, accept: 'video/mp4,video/webm', max: vmax * 1048576, badType: 'فقط ویدیوی MP4 یا WebM پذیرفته می‌شود', tooBig: 'ویدیو باید کمتر از ' + fa(vmax) + ' مگابایت باشد', saved: 'ویدیو ذخیره شد', removed: 'ویدیو برداشته شد', none: 'هنوز ویدیویی نیست', put: 'گذاشتن ویدیو', change: 'عوض کردن ویدیو', take: 'برداشتن ویدیو', hint: 'MP4 یا WebM، تا ' + fa(vmax) + ' مگابایت. ویدیوی کوتاه (زیر یک دقیقه) بهتر دیده می‌شود.',
+    var vmax = (S.meta && S.meta.videoMaxMB) || 2048;
+    var VIDEO_BOX = { key: 'video', type: /^video\/(mp4|webm)$/, accept: 'video/mp4,video/webm', max: vmax * 1048576, badType: 'فقط ویدیوی MP4 یا WebM پذیرفته می‌شود', tooBig: 'ویدیو باید کمتر از ' + fa(Math.round(vmax / 1024)) + ' گیگابایت باشد' + fa(vmax) + ' مگابایت باشد', saved: 'ویدیو ذخیره شد', removed: 'ویدیو برداشته شد', none: 'هنوز ویدیویی نیست', put: 'گذاشتن ویدیو', change: 'عوض کردن ویدیو', take: 'برداشتن ویدیو', hint: 'MP4 یا WebM، حتی 4K، تا ' + fa(Math.round(vmax / 1024)) + ' گیگابایت؛ تکه‌تکه فرستاده می‌شود. برای بازدیدکننده‌ها، ویدیوی کوتاه سریع‌تر باز می‌شود.' + fa(vmax) + ' مگابایت. ویدیوی کوتاه (زیر یک دقیقه) بهتر دیده می‌شود.',
       preview: function (v) { return h('video', { src: '/media/' + v.file, controls: true, preload: 'metadata', playsinline: true }); } };
-    var POSTER_BOX = { key: 'poster', type: /^image\/(png|jpeg|webp|gif)$/, accept: 'image/png,image/jpeg,image/webp,image/gif', max: 6 * 1048576, badType: 'فقط تصویر PNG، JPG، WebP یا GIF پذیرفته می‌شود', tooBig: 'تصویر باید کمتر از ۶ مگابایت باشد', saved: 'تصویر پیش‌نمایش ذخیره شد', removed: 'تصویر پیش‌نمایش برداشته شد', none: 'بدون تصویر پیش‌نمایش', put: 'گذاشتن تصویر پیش‌نمایش', change: 'عوض کردن تصویر', take: 'برداشتن تصویر', hint: 'تصویری که پیش از پخش دیده می‌شود (اختیاری). PNG، JPG یا WebP تا ۶ مگابایت.',
+    var POSTER_BOX = { key: 'poster', type: /^image\/(png|jpeg|webp|gif)$/, accept: 'image/png,image/jpeg,image/webp,image/gif', max: 40 * 1048576, badType: 'فقط تصویر PNG، JPG، WebP یا GIF پذیرفته می‌شود', tooBig: 'تصویر باید کمتر از ۴۰ مگابایت باشد', saved: 'تصویر پیش‌نمایش ذخیره شد', removed: 'تصویر پیش‌نمایش برداشته شد', none: 'بدون تصویر پیش‌نمایش', put: 'گذاشتن تصویر پیش‌نمایش', change: 'عوض کردن تصویر', take: 'برداشتن تصویر', hint: 'تصویری که پیش از پخش دیده می‌شود (اختیاری). PNG، JPG یا WebP تا ۴۰ مگابایت.',
       preview: function (im) { return h('img', { src: '/media/' + im.file, alt: 'تصویر پیش‌نمایش ویدیو', loading: 'lazy' }); } };
 
     var sub = function (t) { return h('p', { class: 'blk-sub', text: t }); };
@@ -1049,7 +1065,7 @@
           var drawShots = function () {
             clear(shots);
             app.screenshots.forEach(function (s, i) {
-              shots.appendChild(h('div', { class: 'shot' }, [h('img', { src: '/media/' + s.file, alt: s.caption || 'تصویر برنامه', loading: 'lazy' }), inp(s, 'caption', { placeholder: 'عنوان تصویر', 'aria-label': 'عنوان تصویر' }),
+              shots.appendChild(h('div', { class: 'shot' }, [h('img', { src: '/media/' + s.file, alt: s.caption || 'تصویر برنامه', loading: 'lazy' }), inp(s, 'caption', { placeholder: 'عنوان تصویر', 'aria-label': 'عنوان تصویر' }), sel(s, 'view', { top: 'در قاب: بالای عکس', center: 'در قاب: وسطِ عکس', bottom: 'در قاب: پایینِ عکس', whole: 'در قاب: کلِ عکس، بی‌برش' }, { dom: { 'aria-label': 'کدام بخشِ عکس در قاب دیده شود', title: 'کدام بخشِ عکس در قابِ گوشی/رایانهٔ صفحهٔ برنامه دیده شود' } }),
                 h('div', { class: 'row' }, [
                   h('button', { class: 'btn sm icon', type: 'button', title: 'جلوتر', 'aria-label': 'جلوتر', disabled: i === 0, onclick: function () { app.screenshots.splice(i - 1, 0, app.screenshots.splice(i, 1)[0]); touch(); drawShots(); } }, ic('up')),
                   h('button', { class: 'btn sm icon', type: 'button', title: 'عقب‌تر', 'aria-label': 'عقب‌تر', disabled: i === app.screenshots.length - 1, onclick: function () { app.screenshots.splice(i + 1, 0, app.screenshots.splice(i, 1)[0]); touch(); drawShots(); } }, ic('down')),
