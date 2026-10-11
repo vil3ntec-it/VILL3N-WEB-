@@ -41,6 +41,7 @@ function defaults() {
       ].join('\n'),
       chatEnabled: true,          // دکمهٔ «پیام» روی سایت
       chatWelcome: 'معمولاً در چند دقیقه جواب می‌دهیم.',
+      autoUpdate: true,           // نصبِ خودکارِ نسخهٔ تازه از کنترول سنتر (پنل ← به‌روزرسانی)
       contactChannel: 'whatsapp', // دکمه‌های «سفارش» و «پرسش» به کجا بروند: whatsapp | telegram | phone | email
       telegramNotify: false,      // سفارشِ تازه به تلگرامِ مالک خبر داده شود
       telegramBotToken: '',
