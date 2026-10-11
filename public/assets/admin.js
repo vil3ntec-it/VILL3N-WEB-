@@ -53,7 +53,7 @@
     layout: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9.5h18M9.5 9.5V20"/>', pages: '<path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
     plus: '<path d="M12 5v14M5 12h14"/>', trash: '<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13M10 11v6M14 11v6"/>', right: '<path d="M9 6l6 6-6 6"/>', left: '<path d="M15 6l-6 6 6 6"/>',
     img: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.500" cy="9.500" r="1.500"/><path d="m4 18 5-5 4 4 3-3 4 4"/>',
-    up: '<path d="M6 14l6-6 6 6"/>', down: '<path d="M6 10l6 6 6-6"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+    up: '<path d="M6 14l6-6 6 6"/>', down: '<path d="M6 10l6 6 6-6"/>', x: '<path d="M6 6l12 12M18 6 6 18"/>', menu: '<path d="M4 7h16M4 12h16M4 17h16"/>', copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
   };
   function ic(name) { return h('span', { html: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICON[name] || '') + '</svg>', style: 'display:inline-flex' }); }
 
@@ -170,11 +170,28 @@
 
   /* ───── قالب و مسیرها ───── */
   var NAV = [['', 'داشبورد', 'home'], ['apps', 'برنامه‌ها', 'apps'], ['home', 'صفحهٔ اصلی', 'layout'], ['pages', 'صفحه‌ها', 'pages'], ['orders', 'سفارش‌ها', 'cart'], ['licenses', 'اشتراک‌ها', 'key'], ['coupons', 'کدهای تخفیف', 'tag'], ['seo', 'سئو و هوش مصنوعی', 'search'], ['deploy', 'اتصال و استقرار', 'link'], ['settings', 'تنظیمات', 'gear'], ['security', 'امنیت', 'shield'], ['backup', 'پشتیبان', 'box']];
-  var main, side;
+  var main, side, shellEl, menuBtn, topTitle;
+  /* ───── منوی گوشی و تبلت: سه‌خط ← کشوی بخش‌ها ─────
+     زدن روی یک بخش کشو را نمی‌بندد؛ فقط ضربدر، زدن روی صفحهٔ بیرون یا Esc می‌بندد. */
+  function menuOpen() { return !!shellEl && shellEl.classList.contains('menu-open'); }
+  function setMenu(open) {
+    if (!shellEl) return;
+    shellEl.classList.toggle('menu-open', open);
+    document.documentElement.classList.toggle('no-scroll', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    if (open) { var on = side.querySelector('a.nav.is-on') || side.querySelector('a.nav'); if (on) on.focus({ preventScroll: true }); } else menuBtn.focus({ preventScroll: true });
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && menuOpen()) setMenu(false); });
   function shell() {
     main = h('main', { class: 'main' });
-    side = h('aside', { class: 'side' });
-    add(side, h('a', { class: 'side-brand', href: siteUrl('/'), target: '_blank', rel: 'noopener', title: 'دیدن سایت' }, [h('b', { text: S.state.brand }), h('span', { text: 'پنل مالک' })]));
+    side = h('aside', { class: 'side', id: 'side-nav', 'aria-label': 'بخش‌های پنل' });
+    menuBtn = h('button', { class: 'btn icon menu-btn', type: 'button', 'aria-label': 'بخش‌ها', 'aria-controls': 'side-nav', 'aria-expanded': 'false', onclick: function () { setMenu(!menuOpen()); } }, ic('menu'));
+    topTitle = h('b', { class: 'top-title' });
+    var topbar = h('header', { class: 'topbar' }, [menuBtn, h('span', { class: 'top-brand', text: S.state.brand }), topTitle]);
+    add(side, h('div', { class: 'side-head' }, [
+      h('a', { class: 'side-brand', href: siteUrl('/'), target: '_blank', rel: 'noopener', title: 'دیدن سایت' }, [h('b', { text: S.state.brand }), h('span', { text: 'پنل مالک' })]),
+      h('button', { class: 'btn icon side-x', type: 'button', 'aria-label': 'بستنِ منو', onclick: function () { setMenu(false); } }, ic('x')),
+    ]));
     NAV.forEach(function (n) { side.appendChild(h('a', { class: 'nav', href: '#/' + n[0], 'data-r': n[0] }, [ic(n[2]), h('span', { class: 't', text: n[1] })])); });
     add(side, h('div', { class: 'side-foot' }, [
       h('span', { class: 'who small mute', text: 'وارد شده: ' + S.state.username }),
@@ -183,7 +200,9 @@
         h('button', { class: 'btn sm', type: 'button', onclick: function () { api('POST', '/logout').then(boot, boot); } }, [ic('out'), 'خروج']),
       ]),
     ]));
-    clear(root).appendChild(h('div', { class: 'shell' }, [side, main]));
+    var backdrop = h('div', { class: 'side-backdrop', 'aria-hidden': 'true', onclick: function () { setMenu(false); } });
+    shellEl = h('div', { class: 'shell' }, [topbar, side, backdrop, main]);
+    clear(root).appendChild(shellEl);
     document.body.appendChild(toasts);
   }
 
@@ -197,7 +216,7 @@
     if (!ROUTES[name]) name = '';
     lastHash = location.hash;
     S.onDirty = null;
-    Array.prototype.forEach.call(side.querySelectorAll('a.nav'), function (a) { a.classList.toggle('is-on', a.getAttribute('data-r') === name); });
+    Array.prototype.forEach.call(side.querySelectorAll('a.nav'), function (a) { var on = a.getAttribute('data-r') === name; a.classList.toggle('is-on', on); if (on) { a.setAttribute('aria-current', 'page'); topTitle.textContent = a.textContent; } else a.removeAttribute('aria-current'); });
     loading();
     Promise.resolve(ROUTES[name](parts.slice(1))).catch(function (e) { clear(main).appendChild(h('div', { class: 'empty' }, [h('b', { text: 'این بخش باز نشد' }), e.message])); });
     window.scrollTo(0, 0);

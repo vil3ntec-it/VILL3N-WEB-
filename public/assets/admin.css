@@ -88,17 +88,26 @@ img { max-width: 100%; display: block; }
 .page-head p { color: var(--mute); width: 100%; font-size: .93rem; max-width: 60em; }
 .page-head .spacer { flex: 1; }
 
+/* سه‌خط و کشو فقط در گوشی و تبلت */
+.topbar, .side-head .side-x, .side-backdrop { display: none; } /* ‎.btn.icon‎ پایین‌تر display دارد؛ این باید قوی‌تر باشد */
+.side-head { display: flex; align-items: center; }
 @media (max-width: 860px) {
-  .shell { grid-template-columns: 1fr; }
-  .side { position: sticky; top: 0; z-index: 30; height: auto; flex-direction: row; align-items: center; overflow-x: auto; padding: 8px 10px; gap: 2px; border-inline-end: 0; border-block-end: 1px solid var(--line); scrollbar-width: none; }
-  .side::-webkit-scrollbar { display: none; }
-  .side-brand { padding: 4px 8px; }
-  .side-brand span, .side a.nav span.t { display: none; }
-  .side a.nav { padding: 9px 11px; }
-  .side a.nav.is-on { box-shadow: inset 0 -3px 0 var(--gold); }
-  .side a.nav.is-on span.t { display: inline; }
-  .side-foot { margin: 0 0 0 0; margin-inline-start: auto; padding: 0; display: flex; }
-  .side-foot .who { display: none; }
+  /* ⚠️ بی align-content، ردیفِ نوارِ بالا کشیده می‌شد و نیمی از صفحه خالی می‌ماند */
+  .shell { grid-template-columns: 1fr; align-content: start; }
+  .topbar { display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 30; padding: 8px 12px; padding-top: max(8px, env(safe-area-inset-top)); background: var(--side); border-block-end: 1px solid var(--line); }
+  .menu-btn { width: 44px; height: 44px; flex: none; }
+  .top-brand { font-weight: 900; letter-spacing: .06em; direction: ltr; }
+  .top-title { margin-inline-start: auto; font-weight: 700; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .side { position: fixed; inset-block: 0; inset-inline-start: 0; z-index: 50; width: min(300px, 86vw); height: 100dvh; padding: 14px 12px; padding-top: max(14px, env(safe-area-inset-top)); overflow-y: auto; overscroll-behavior: contain; border-inline-end: 1px solid var(--line); box-shadow: 0 0 60px -10px rgba(0, 0, 0, .45); transform: translateX(105%); visibility: hidden; transition: transform .25s cubic-bezier(.2, .9, .25, 1), visibility 0s linear .25s; }
+  [dir="ltr"] .side { transform: translateX(-105%); }
+  .menu-open .side { transform: none; visibility: visible; transition: transform .25s cubic-bezier(.2, .9, .25, 1); }
+  .side-head { margin-block-end: 6px; }
+  .side-brand { padding: 4px 8px 4px; }
+  .side-head .side-x { display: inline-flex; margin-inline-start: auto; width: 44px; height: 44px; }
+  .side a.nav { padding: 12px 12px; min-height: 44px; }
+  .side-backdrop { display: block; position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, .45); opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .menu-open .side-backdrop { opacity: 1; pointer-events: auto; }
+  html.no-scroll, html.no-scroll body { overflow: hidden; }
 }
 
 /* ───── اجزا ───── */
