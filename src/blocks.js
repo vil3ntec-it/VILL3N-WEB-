@@ -76,7 +76,7 @@ ${hasHead ? `<thead><tr>${b.head.map((h) => `<th scope="col">${esc(h)}</th>`).jo
     const im = b.image && b.image.file ? b.image : null;
     const copy = `${b.title ? `<h2>${esc(b.title)}</h2>` : ''}${b.intro ? `<p class="media-intro">${esc(b.intro)}</p>` : ''}${b.text ? `<div class="prose">${rich(b.text)}</div>` : ''}`;
     if (!im && !copy) return '';
-    const fig = im ? `<figure class="media-img"><img src="/media/${esc(im.file)}" alt="${esc(b.alt || b.title || '')}"${Number(im.w) > 0 && Number(im.h) > 0 ? ` width="${Number(im.w)}" height="${Number(im.h)}"` : ''} loading="lazy" decoding="async"></figure>` : '';
+    const fig = im ? `<figure class="media-img"><img data-zoom src="/media/${esc(im.file)}" alt="${esc(b.alt || b.title || '')}"${Number(im.w) > 0 && Number(im.h) > 0 ? ` width="${Number(im.w)}" height="${Number(im.h)}"` : ''} loading="lazy" decoding="async"></figure>` : '';
     const side = ['start', 'end', 'full'].includes(b.side) ? b.side : 'start';
     return `<div class="media is-${im ? side : 'full'}${copy ? '' : ' is-bare'}">${fig}${copy ? `<div class="media-copy">${copy}</div>` : ''}</div>`;
   },

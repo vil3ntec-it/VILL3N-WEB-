@@ -825,8 +825,8 @@ async function main() {
       ok(!(await req('GET', '/p/videos')).text.includes('blk-video') && (await req('GET', '/p/videos')).text.includes('class="review spot ring"'), 'تا ویدیو گذاشته نشود، بخش ویدیو در سایت نیست');
       const bad = [await A('PUT', `/pages/${vp}/blocks/txt001/video`, { body: MP4 }), await A('PUT', `/pages/${vp}/blocks/nope/video`, { body: MP4 }), await A('PUT', `/pages/${vp}/blocks/vid001/video`, { body: fx.PNG }), await A('PUT', `/pages/${vp}/blocks/vid001/video`, { body: Buffer.from('<html><script>alert(1)</script></html>'.padEnd(80, ' ')) }), await A('PUT', `/pages/${vp}/blocks/vid001/poster`, { body: MP4 }), await A('PUT', `/pages/${vp}/blocks/rev001/poster`, { body: fx.PNG }), await req('PUT', `/api/admin/pages/${vp}/blocks/vid001/video`, { body: MP4, headers: { 'x-v3': '1' } })];
       ok(bad.map((x) => x.status).join() === '400,404,400,400,400,400,401' && !fs.readdirSync(path.join(dir2, 'images')).some((n) => /\.(mp4|webm)$/.test(n)), 'ویدیو فقط روی بخشِ «ویدیو»ی ذخیره‌شده، فقط MP4/WebM واقعی و فقط با ورود', bad.map((x) => x.status));
-      r = await A('PUT', `/pages/${vp}/blocks/vid001/video`, { body: Buffer.concat([MP4, Buffer.alloc(60 * 1024 * 1024)]) });
-      ok(r.status === 413 && /مگابایت/.test(r.json.error), 'ویدیوی بزرگ‌تر از ۶۰ مگابایت رد می‌شود', [r.status]);
+      r = await A('PUT', `/pages/${vp}/blocks/vid001/video`, { body: Buffer.concat([MP4, Buffer.alloc(90 * 1024 * 1024)]) });
+      ok(r.status === 413 && /مگابایت/.test(r.json.error), 'ویدیوی یک‌جای بزرگ‌تر از ۹۰ مگابایت رد می‌شود (بزرگ‌تر فقط تکه‌تکه)', [r.status]);
       r = await A('PUT', `/pages/${vp}/blocks/vid001/video`, { body: MP4, headers: { 'content-type': 'text/html' } });
       const v1 = r.json.video && r.json.video.file;
       ok(r.status === 200 && /^[\w-]+\.mp4$/.test(v1) && r.json.video.size === MP4.length && r.json.video.mime === 'video/mp4' && fs.existsSync(imgFile(v1)), 'بارگذاری ویدیو (نوع از روی بایت‌های فایل)', r.text);

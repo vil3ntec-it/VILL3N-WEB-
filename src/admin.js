@@ -7,7 +7,7 @@ const dns = require('dns');
 const { HttpError } = require('./core/http');
 const telegram = require('./core/telegram');
 const { verifyPassword } = require('./core/auth');
-const { hashFile, VIDEO_MAX } = require('./core/files');
+const { hashFile, VIDEO_MAX, VIDEO_DIRECT_MAX, IMAGE_MAX } = require('./core/files');
 const model = require('./core/model');
 const { str, int, bool, id, dayKey, toLatinDigits, isColor, slugify } = require('./core/util');
 const { PLATFORMS, ALLOWED_EXT, SOURCE_LABEL } = require('./core/detect');
@@ -220,7 +220,7 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
 
   app.put(`${A}/apps/:id/icon`, authed(async (ctx) => {
     const a = getApp(ctx);
-    const { name } = files.saveImage(await ctx.readBody(6 * 1024 * 1024 + 1024));
+    const { name } = files.saveImage(await ctx.readBody(IMAGE_MAX + 1024));
     const before = a.icon;
     a.icon = name;
     releaseImages([before]);
@@ -232,7 +232,7 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
   app.post(`${A}/apps/:id/screenshots`, authed(async (ctx) => {
     const a = getApp(ctx);
     if (a.screenshots.length >= 12) throw new HttpError(400, 'حداکثر ۱۲ تصویر برای هر برنامه');
-    const img = files.saveImage(await ctx.readBody(6 * 1024 * 1024 + 1024));
+    const img = files.saveImage(await ctx.readBody(IMAGE_MAX + 1024));
     const shot = { id: id(6), file: img.name, w: img.w, h: img.h, caption: '' };
     a.screenshots.push(shot);
     db.touch();
@@ -321,7 +321,7 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
   for (const scope of Object.values(SCOPES)) {
     app.put(`${scope.base}/blocks/:bid/image`, authed(async (ctx) => {
       const t = imageBlock(ctx, scope);
-      const img = files.saveImage(await ctx.readBody(6 * 1024 * 1024 + 1024));
+      const img = files.saveImage(await ctx.readBody(IMAGE_MAX + 1024));
       const before = t.block.image && t.block.image.file;
       t.block.image = { file: img.name, w: img.w, h: img.h };
       releaseImages([before]); // تصویر قبلی جایگزین و پاک می‌شود
@@ -360,14 +360,31 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
     app.put(`${scope.base}/blocks/:bid/video`, authed(async (ctx) => {
       const t = videoBlock(ctx);
       const len = Number(ctx.req.headers['content-length'] || 0);
-      if (len > VIDEO_MAX) throw new HttpError(413, `ویدیو باید کمتر از ${VIDEO_MAX / 1048576} مگابایت باشد`);
-      const v = files.saveVideo(await ctx.readBody(VIDEO_MAX + 1024));
+      if (len > VIDEO_DIRECT_MAX) throw new HttpError(413, `ویدیوی بزرگ‌تر از ${VIDEO_DIRECT_MAX / 1048576} مگابایت را تکه‌تکه بفرستید (پنل خودش این کار را می‌کند)`);
+      const v = files.saveVideo(await ctx.readBody(VIDEO_DIRECT_MAX + 1024));
       setMedia(ctx, t, 'video', { file: v.name, size: v.size, mime: v.mime }, 'ویدیوی بخش گذاشته شد');
     }));
     app.del(`${scope.base}/blocks/:bid/video`, authed((ctx) => setMedia(ctx, videoBlock(ctx), 'video', null, 'ویدیوی بخش برداشته شد')));
+    // ویدیوی بزرگ (4K): تکه‌تکه، با همان صفِ بارگذاریِ نسخه‌ها؛ در پایان روی همین بخش می‌نشیند
+    app.post(`${scope.base}/blocks/:bid/video-upload`, authed(async (ctx) => {
+      videoBlock(ctx);
+      const b = await ctx.readJson(4096);
+      const size = int(b.size, 1, Number.MAX_SAFE_INTEGER, 0);
+      if (!size) throw new HttpError(400, 'ویدیو خالی است');
+      if (size > VIDEO_MAX) throw new HttpError(413, `ویدیو باید کمتر از ${VIDEO_MAX / 1073741824} گیگابایت باشد`);
+      try { const st = fs.statfsSync(dataDir); if (st.bavail * st.bsize < size * 2 + 64 * 1024 * 1024) throw new HttpError(507, 'فضای خالی دیسک سرور برای این ویدیو کافی نیست'); } catch (e) { if (e instanceof HttpError) throw e; }
+      if (uploads.size > 20) throw new HttpError(429, 'بارگذاری‌های نیمه‌تمام زیاد است؛ کمی صبر کنید');
+      const uid = id(12);
+      const tmp = path.join(dataDir, 'tmp', `chunk-${uid}`);
+      fs.writeFileSync(tmp, '');
+      const params = Object.assign({}, ctx.params);
+      uploads.set(uid, { name: 'video', size, tmp, received: 0, next: 0, at: Date.now(), busy: false,
+        finish: (fctx) => { fctx.params = Object.assign({}, fctx.params, params); const t = videoBlock(fctx); const v = files.saveVideoFile(tmp, size); setMedia(fctx, t, 'video', { file: v.name, size: v.size, mime: v.mime }, 'ویدیوی بخش گذاشته شد'); } });
+      ctx.json({ ok: true, uploadId: uid, chunk: CHUNK });
+    }));
     app.put(`${scope.base}/blocks/:bid/poster`, authed(async (ctx) => {
       const t = videoBlock(ctx);
-      const img = files.saveImage(await ctx.readBody(6 * 1024 * 1024 + 1024));
+      const img = files.saveImage(await ctx.readBody(IMAGE_MAX + 1024));
       setMedia(ctx, t, 'poster', { file: img.name, w: img.w, h: img.h }, 'تصویر پیش‌نمایش ویدیو گذاشته شد');
     }));
     app.del(`${scope.base}/blocks/:bid/poster`, authed((ctx) => setMedia(ctx, videoBlock(ctx), 'poster', null, 'تصویر پیش‌نمایش ویدیو برداشته شد')));
@@ -427,6 +444,7 @@ module.exports = function adminRoutes({ app, db, auth, files, assets, env, dataD
     if (!u) throw new HttpError(404, 'این بارگذاری منقضی شده است؛ دوباره شروع کنید');
     if (u.busy) throw new HttpError(409, 'هنوز در حال دریافت است');
     if (u.received !== u.size) throw new HttpError(400, 'فایل کامل نرسیده است', { received: u.received });
+    if (u.finish) { uploads.delete(ctx.params.uid); try { return u.finish(ctx); } catch (e) { fs.unlink(u.tmp, () => {}); throw e; } }
     const a = data().apps.find((x) => x.id === u.appId);
     uploads.delete(ctx.params.uid);
     if (!a) { fs.unlink(u.tmp, () => {}); throw new HttpError(404, 'برنامه پیدا نشد'); }

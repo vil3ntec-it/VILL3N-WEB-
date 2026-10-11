@@ -108,12 +108,15 @@ function isPhone(app) {
   return mockIsPhone(app);
 }
 const dims = (im) => (Number(im.w) > 0 && Number(im.h) > 0 ? ` width="${Number(im.w)}" height="${Number(im.h)}"` : '');
+// کدام بخشِ عکس در قاب دیده شود (برگزیدهٔ مالک در پنل)
+const VIEW_STYLE = { top: 'object-position:50% 0', center: 'object-position:50% 50%', bottom: 'object-position:50% 100%', whole: 'object-fit:contain;object-position:50% 50%' };
+const viewStyle = (sh) => ` style="${VIEW_STYLE[sh && sh.view] || VIEW_STYLE.top}"`;
 // قاب دستگاه: تصویر واقعی برنامه اگر هست، وگرنه رابط زندهٔ نمایشی با رنگ‌های همان برنامه
 function frame(app, { eager = false } = {}) {
   const shot = arr(app.screenshots)[0];
   const phone = isPhone(app);
   const screen = shot
-    ? `<img src="/media/${esc(shot.file)}" alt=""${dims(shot)} decoding="async"${eager ? ' fetchpriority="high"' : ' loading="lazy"'}>`
+    ? `<img data-zoom src="/media/${esc(shot.file)}" alt="${esc(shot.caption || app.name)}"${dims(shot)}${viewStyle(shot)} decoding="async"${eager ? ' fetchpriority="high"' : ' loading="lazy"'}>`
     : mock(app);
   return { phone, html: `<div class="device-frame">${phone ? '<i class="device-notch"></i>' : '<div class="device-bar"><i></i><i></i><i></i></div>'}<div class="device-screen">${screen}</div></div>` };
 }
@@ -504,14 +507,14 @@ ${shots.length > 1 ? (captioned ? `
 <section class="sec tour" id="shots" aria-label="گشتی در برنامه" data-tour>
   <header class="sec-head"><h2>گشتی در ${esc(app.name)}</h2></header>
   <div class="tour-grid">
-    <div class="tour-stage"><div class="device ${isPhone(app) ? 'is-phone' : 'is-wide'}"><div class="device-frame">${isPhone(app) ? '<i class="device-notch"></i>' : '<div class="device-bar"><i></i><i></i><i></i></div>'}<div class="device-screen">${shots.map((sh, i) => `<img${i === 0 ? ' class="is-on"' : ''} src="/media/${esc(sh.file)}" alt=""${dims(sh)} loading="lazy" decoding="async">`).join('')}</div></div></div></div>
-    <ol class="tour-steps">${shots.map((sh, i) => `<li${i === 0 ? ' class="is-on"' : ''} data-i="${i}"><span class="step-n" aria-hidden="true">${faDigits(i + 1)}</span><p>${esc(sh.caption)}</p><img src="/media/${esc(sh.file)}" alt="${esc(sh.caption)}"${dims(sh)} loading="lazy" decoding="async"></li>`).join('')}</ol>
+    <div class="tour-stage"><div class="device ${isPhone(app) ? 'is-phone' : 'is-wide'}"><div class="device-frame">${isPhone(app) ? '<i class="device-notch"></i>' : '<div class="device-bar"><i></i><i></i><i></i></div>'}<div class="device-screen">${shots.map((sh, i) => `<img${i === 0 ? ' class="is-on"' : ''} data-zoom src="/media/${esc(sh.file)}" alt=""${dims(sh)}${viewStyle(sh)} loading="lazy" decoding="async">`).join('')}</div></div></div></div>
+    <ol class="tour-steps">${shots.map((sh, i) => `<li${i === 0 ? ' class="is-on"' : ''} data-i="${i}"><span class="step-n" aria-hidden="true">${faDigits(i + 1)}</span><p>${esc(sh.caption)}</p><img data-zoom src="/media/${esc(sh.file)}" alt="${esc(sh.caption)}"${dims(sh)} loading="lazy" decoding="async"></li>`).join('')}</ol>
   </div>
 </section>` : `
 <section class="sec shots" id="shots" aria-label="تصویرهای برنامه">
   <header class="sec-head"><h2>تصویرهای ${esc(app.name)}</h2></header>
-  <div class="shots-stage" data-zoomable>
-    ${shots.map((sh, i) => `<figure><button type="button" class="shot" aria-label="بزرگ‌نمایی: ${esc(sh.caption || `تصویر ${i + 1}`)}"><img src="/media/${esc(sh.file)}" alt="${esc(sh.caption || `تصویر ${i + 1} از ${app.name}`)}"${dims(sh)} loading="lazy" decoding="async"></button>${sh.caption ? `<figcaption>${esc(sh.caption)}</figcaption>` : ''}</figure>`).join('')}
+  <div class="shots-stage">
+    ${shots.map((sh, i) => `<figure><button type="button" class="shot" aria-label="بزرگ‌نمایی: ${esc(sh.caption || `تصویر ${i + 1}`)}"><img data-zoom src="/media/${esc(sh.file)}" alt="${esc(sh.caption || `تصویر ${i + 1} از ${app.name}`)}"${dims(sh)} loading="lazy" decoding="async"></button>${sh.caption ? `<figcaption>${esc(sh.caption)}</figcaption>` : ''}</figure>`).join('')}
   </div>
 </section>`) : ''}
 

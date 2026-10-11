@@ -281,19 +281,35 @@
     steps.forEach(function (s) { io.observe(s); });
   });
 
-  /* ───── بزرگ‌نمایی تصویرهای برنامه ───── */
+  /* ───── بزرگ‌نمایی همهٔ تصویرها (عکس‌های برنامه و بخش‌های «تصویر و متن») ─────
+     بارِ اول کلِ عکس در صفحه جا می‌شود؛ با یک ضربه، اندازهٔ واقعی (برای عکسِ 4K) و می‌شود جابه‌جایش کرد.
+     بستن: ضربدر، Esc، یا زدن بیرون از عکس. */
   safe(function () {
-    var zone = $('[data-zoomable]');
-    if (!zone || !window.HTMLDialogElement) return;
-    var dlg = doc.createElement('dialog'); dlg.className = 'zoom';
-    var big = doc.createElement('img'); big.alt = ''; dlg.appendChild(big);
+    if (!window.HTMLDialogElement || !doc.querySelector('img[data-zoom]')) return;
+    var dlg = doc.createElement('dialog'); dlg.className = 'zoom'; dlg.setAttribute('aria-label', 'بزرگ‌نمایی تصویر');
+    var x = doc.createElement('button'); x.type = 'button'; x.className = 'zoom-x'; x.setAttribute('aria-label', 'بستن'); x.textContent = '×';
+    var pane = doc.createElement('div'); pane.className = 'zoom-pane';
+    var big = doc.createElement('img'); big.alt = ''; pane.appendChild(big);
+    var hint = doc.createElement('p'); hint.className = 'zoom-hint'; hint.textContent = 'برای اندازهٔ واقعی روی عکس بزنید';
+    dlg.appendChild(x); dlg.appendChild(pane); dlg.appendChild(hint);
     doc.body.appendChild(dlg);
-    dlg.addEventListener('click', function () { dlg.close(); });
-    zone.addEventListener('click', function (e) {
-      var hit = e.target.closest('.shot, img');
-      var im = hit && (hit.tagName === 'IMG' ? hit : $('img', hit));
+    var close = function () { dlg.classList.remove('is-full'); dlg.close(); };
+    x.addEventListener('click', close);
+    dlg.addEventListener('click', function (e) { if (e.target === dlg || e.target === pane) close(); });
+    big.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var full = dlg.classList.toggle('is-full');
+      hint.textContent = full ? 'برای جا شدن در صفحه دوباره بزنید' : 'برای اندازهٔ واقعی روی عکس بزنید';
+      if (full) { var r = big.getBoundingClientRect(); pane.scrollLeft = (big.naturalWidth - pane.clientWidth) * ((e.clientX - r.left) / r.width); pane.scrollTop = (big.naturalHeight - pane.clientHeight) * ((e.clientY - r.top) / r.height); }
+    });
+    doc.addEventListener('click', function (e) {
+      // قابِ دستگاه لایه‌های تزیینی روی عکس دارد؛ زدن روی هر جای قاب، عکسِ داخلش را باز می‌کند
+      var hit = e.target.closest && e.target.closest('img[data-zoom], .shot, .device-frame');
+      var im = hit && (hit.tagName === 'IMG' ? hit : $('img[data-zoom].is-on', hit) || $('img[data-zoom]', hit));
       if (!im) return;
+      e.preventDefault();
       big.src = im.currentSrc || im.src; big.alt = im.alt;
+      dlg.classList.remove('is-full'); hint.textContent = 'برای اندازهٔ واقعی روی عکس بزنید';
       dlg.showModal();
     });
   });

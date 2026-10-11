@@ -70,6 +70,8 @@ function cleanPlan(p, old) {
 
 /* ───── بخش‌های صفحه (بلوک‌ها): مالک با همین‌ها به صفحهٔ برنامه، صفحهٔ اصلی و صفحه‌های تازه محتوا اضافه می‌کند ───── */
 
+// تصویرِ برنامه در قابِ دستگاه: کدام بخشش دیده شود، یا کلِ عکس بی‌برش
+const SHOT_VIEWS = ['top', 'center', 'bottom', 'whole'];
 const BLOCK_TYPES = { text: 'متن', cards: 'کادرها', table: 'جدول', stats: 'آمار و ارقام', steps: 'مرحله‌ها', image: 'تصویر و متن', video: 'ویدیو', quote: 'نقل‌قول یا نکته', reviews: 'نظر مشتری‌ها', cta: 'دعوت به اقدام', faq: 'پرسش و پاسخ' };
 const BLOCK_LIMITS = { app: 30, home: 40, page: 40, pages: 40 };
 const PAGE_STATUS = ['published', 'draft'];
@@ -261,7 +263,7 @@ function cleanApp(input, old, allApps) {
   if (old && Array.isArray(input.screenshots)) {
     const byId = new Map(old.screenshots.map((s) => [s.id, s]));
     const next = [];
-    for (const s of input.screenshots.map(obj)) { const o = byId.get(s.id); if (o) { next.push({ id: o.id, file: o.file, w: o.w || 0, h: o.h || 0, caption: str(s.caption, 100) }); byId.delete(o.id); } }
+    for (const s of input.screenshots.map(obj)) { const o = byId.get(s.id); if (o) { next.push({ id: o.id, file: o.file, w: o.w || 0, h: o.h || 0, caption: str(s.caption, 100), view: SHOT_VIEWS.includes(s.view) ? s.view : 'top' }); byId.delete(o.id); } }
     app.screenshots = next.concat([...byId.values()]);
   }
   return app;
@@ -482,7 +484,7 @@ function normalizeApp(a) {
     faq: list(a.faq, 20).filter(isObj).map((f) => ({ q: str(f.q, 200), a: str(f.a, 1500) })).filter((f) => f.q && f.a),
     plans: list(a.plans, 12).filter(isObj).map((p) => { try { return cleanPlan(p, typeof p.id === 'string' && p.id ? { id: str(p.id, 20) } : null); } catch (_) { return null; } }).filter(Boolean),
     icon: typeof a.icon === 'string' && IMAGE_NAME.test(a.icon) ? a.icon : '',
-    screenshots: list(a.screenshots, 12).filter((x) => isObj(x) && typeof x.file === 'string' && IMAGE_NAME.test(x.file)).map((x) => ({ id: str(x.id, 12) || id(6), file: x.file, w: int(x.w, 0, 20000), h: int(x.h, 0, 20000), caption: str(x.caption, 100) })),
+    screenshots: list(a.screenshots, 12).filter((x) => isObj(x) && typeof x.file === 'string' && IMAGE_NAME.test(x.file)).map((x) => ({ id: str(x.id, 12) || id(6), file: x.file, w: int(x.w, 0, 20000), h: int(x.h, 0, 20000), caption: str(x.caption, 100), view: SHOT_VIEWS.includes(x.view) ? x.view : 'top' })),
     versions: list(a.versions, 1000).filter((v) => isObj(v) && typeof v.id === 'string' && typeof v.file === 'string').map((v) => ({
       id: str(v.id, 20), version: str(v.version, 40).replace(/[^\w.+-]/g, ''), code: Number.isFinite(v.code) ? v.code : null,
       platform: has(PLATFORMS, v.platform) ? v.platform : 'other', file: str(v.file, 160).replace(/^.*[\\/]/, '').replace(/[^\w.-]/g, '_'), fileName: str(v.fileName, 160),
@@ -548,5 +550,5 @@ function normalizeBackup(src) {
 module.exports = {
   PERIODS, APP_STATUS, SCENES, shiftColor, PLATFORMS, cleanApp, cleanPlan, cleanCoupon, publishedVersions, latestByPlatform, latestVersion, platformFromUA,
   planPrice, discountActive, quote, couponProblem, couponLoad, amount, normalizeBackup, createOrder, createLicense, licenseState, setOrderStatus, endDate,
-  BLOCK_TYPES, BLOCK_LIMITS, PAGE_STATUS, PAGE_RESERVED, cleanBlocks, cleanPage, cleanBadges,
+  SHOT_VIEWS, BLOCK_TYPES, BLOCK_LIMITS, PAGE_STATUS, PAGE_RESERVED, cleanBlocks, cleanPage, cleanBadges,
 };
