@@ -99,6 +99,27 @@ async function main() {
   r = await req('GET', '/admin/owner');
   ok(r.status === 200 && r.text.includes('پنل مالک'), '/admin/owner پنل را باز می‌کند');
 
+  section('صفحهٔ حسابِ کیو‌آرِ پمپ — لینکِ کوتاهِ /a/');
+  r = await req('GET', '/a/pump-yaqobi/d7/abcdef0123456789abcd');
+  ok(r.status === 200 && r.text.includes('LIVE_API') && r.text.includes('/a\\/'), 'لینکِ کوتاه صفحهٔ حساب را می‌دهد');
+  {
+    const csp = r.headers['content-security-policy'] || '';
+    const html = r.text;
+    const inline = html.slice(html.indexOf('<script>') + 8, html.lastIndexOf('</script>'));
+    const hash = `'sha256-${crypto.createHash('sha256').update(inline).digest('base64')}'`;
+    ok(csp.includes(hash) && !/unsafe-inline'[^;]*;?\s*$/.test(csp.split('script-src')[1]?.split(';')[0] || ''), 'اسکریپتِ صفحه فقط با اثرِ انگشتِ خودش اجرا می‌شود', csp);
+    ok(/connect-src 'self' https:\/\/api\.vill3n\.top/.test(csp), 'داده فقط از api.vill3n.top', csp);
+    ok(/microphone=\(self\)/.test(r.headers['permissions-policy'] || ''), 'پیامِ صوتیِ چت اجازهٔ میکروفون دارد');
+    ok(/noindex/.test(r.headers['x-robots-tag'] || ''), 'صفحهٔ حساب در جست‌وجو نمی‌آید');
+    ok(html === fs.readFileSync(path.join(ROOT, 'public', 'acct', 'index.html'), 'utf8'), 'همان فایلِ public/acct بی تغییر');
+  }
+  r = await req('GET', '/a/sw.js');
+  ok(r.status === 200 && /javascript/.test(r.headers['content-type'] || ''), 'کارگرِ اعلانِ صفحهٔ حساب');
+  r = await req('GET', '/a/bad%20part/d7/k');
+  ok(r.status === 404, 'تکهٔ بدشکل ⇒ ۴۰۴');
+  r = await req('GET', '/');
+  ok(!/microphone=\(self\)/.test(r.headers['permissions-policy'] || ''), 'بقیهٔ سایت همان سیاستِ تنگ را دارد');
+
   section('راه‌اندازی اولیه و ورود');
   r = await A('GET', '/state');
   ok(r.json.setup === true && r.json.authed === false, 'وضعیت: نیاز به راه‌اندازی');

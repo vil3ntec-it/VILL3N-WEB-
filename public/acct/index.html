@@ -1,0 +1,1257 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive, noai, noimageai">
+<title>حسابِ من — پمپ بنزین</title>
+<meta name="theme-color" content="#0f1622">
+<!--
+  ══ صفحهٔ «حسابِ من» ═══════════════════════════════════════════════════════
+  این صفحهٔ تازه است و هیچ ربطی به برنامهٔ قدیمیِ سایت ندارد — خواستهٔ صریحِ
+  صاحب ریپو: «طرف که اسکن می‌کند سایت باز بشود و تمام اطلاعاتش تو گوشی بیاید؛
+  یک سایت جدید برای دیدنِ اطلاعات، آن سایت قبلی را ول کن».
+
+  ⚠️ این صفحه به هیچ سروری وصل نمی‌شود و هیچ رمزی نمی‌خواهد. تمامِ داده داخلِ
+  خودِ کیو‌آر است (فشرده و base64 در تکهٔ #d=…). یعنی:
+     • مشتری اینترنتِ سرورِ خانگی را لازم ندارد،
+     • هیچ حسابی از راهِ این صفحه لو نمی‌رود — هر کد فقط همان حسابِ خودش را دارد،
+     • و کدی که امروز چاپ شود، فردا هم همان عددهای امروز را نشان می‌دهد.
+
+  ══ گزارشِ صاحب ریپو (۱۴۰۵/۰۶/۲۴) ══════════════════════════════════════════
+  «بعضی جدول‌ها یا کادرهای جدول‌ها نیست؛ یارو نمی‌تواند ببیند که واحدِ پول چقدر
+   قرض‌دار است یا تیل چقدر، یا شرکت‌ها نمی‌دانند دیزل چقدر از من می‌خواهند یا
+   پطرول چقدر… جدول‌ها را تکمیل و درست کن و فقط خواندنی باشد، ولی بتواند با
+   دکمه‌ها واحدها و غیره را عوض کند… و آرشیوها یادم نرود، و ماه و سال — که در
+   هر ماه یا سال چقدر برد یا تحویل داشت.»
+
+  پس این صفحه از امروز:
+    ۱) هر «دفتر» را یک تب می‌کند (واحد تیل / واحد پول) — پیش از این فقط دفترِ
+       فعال داخلِ کیو‌آر می‌رفت و نیمِ حساب اصلاً دیده نمی‌شد.
+    ۲) جدولِ تفکیکِ پطرول و دیزل را نشان می‌دهد.
+    ۳) دکمه‌های فیلتر دارد — تیل و ماه — و اینها هیچ چیزی را عوض نمی‌کنند،
+       فقط کم و زیاد می‌کنند که چه دیده شود. صفحه فقط‌خواندنی است و می‌ماند.
+    ۴) آرشیوِ ماه‌به‌ماه و سال‌به‌سال دارد.
+
+  ⚠️ و شکلِ قدیمِ داده (‎h‎/‎r‎/‎s‎ی تخت، بی ‎b‎) هنوز باز می‌شود و باید بشود:
+  کیو‌آرهایی که چاپ شده و دستِ مشتری است همان شکل‌اند.
+
+  ══ کیو‌آرِ زنده (۱۴۰۵/۰۶/۲۵) ══════════════════════════════════════════════
+  «من دارم زنده تغییرات میارم توی حسابِ طرف، طرف هم داره با کیو‌آر حسابشو چک
+   می‌کنه و می‌خوام درجا برای اون هم بره… که هر دقیقه بتونه چک کنه و بفهمه.»
+
+  کیو‌آرِ تازه چهار پارامترِ کوتاه پیش از ‎d=‎ دارد: ‎s‎ (کدِ پمپ)، ‎a‎ (شناسهٔ
+  حساب)، ‎k‎ (رمزِ همین یک حساب) و ‎t‎ (زمانِ ساختِ کد). صفحه اول همان دادهٔ
+  داخلِ کد را نشان می‌دهد — پس بی‌اینترنت هم باز می‌شود — و بعد از ابرِ
+  خودِ پمپ می‌پرسد (‎LIVE_API‎)؛ اگر عکسِ تازه‌تری بود، همان لحظه جایش
+  می‌گذارد. هر ۶۰ ثانیه، هر بار که صفحه دوباره جلوی چشم بیاید، و با دکمهٔ
+  «به‌روز کن».
+
+  ⚠️ نشانیِ ابر در خودِ کد قفل است و از نشانی خوانده نمی‌شود (همان قاعدهٔ
+  ‎kar/cloud.js‎)، وگرنه هر کسی می‌توانست صفحه را به سرورِ خودش ببرد. ‎k‎ فقط
+  همین یک حساب را باز می‌کند؛ نه رمزِ برنامه است نه رمزِ سرور. کیو‌آرهای
+  بی این چهار پارامتر همان کیو‌آرِ ایستا هستند و صفحه هیچ درخواستی نمی‌زند.
+
+  ══ چتِ پشتیبانی (۱۴۰۵/۰۶/۲۶) ═════════════════════════════════════════════
+  «داخلِ کیو‌آر که اسکن می‌زند یک چتِ پشتیبانی با من داشته باشد… عینِ واتساپ:
+   اسمش دیده شود، پیام‌ها پاک شوند، عکس و ویدیو و صدا بفرستد، و حتی مرورگرش
+   بسته باشد پیام برایش برود.»
+
+  همان هویتِ کیو‌آرِ زنده (‎s/a/k‎) گفت‌وگو را باز می‌کند — مشتری هیچ حسابی
+  نمی‌سازد. دکمهٔ شناورِ «💬 پشتیبانی» پایینِ صفحه؛ پیام‌ها از
+  ‎/api/pump/public/<پمپ>/acct/<id>/chat?k=…‎ می‌آیند و می‌روند؛ عکس/ویدیو/صدا
+  خام به ‎…/chat/media‎ می‌رود و شناسه‌اش در پیام می‌نشیند؛ پاک کردن نرم است؛
+  و با «🔔 خبرم کن» اشتراکِ پوشِ مرورگر (‎sw.js‎ی همین پوشه) ثبت می‌شود تا
+  جوابِ صاحبِ پمپ با مرورگرِ بسته هم برسد. کیو‌آرِ ایستا چت ندارد.
+-->
+<style>
+  /* ══ ظاهر — «مثلِ خودِ برنامه» (۱۴۰۵/۰۷/۱۵) ═══════════════════════════
+     خواستهٔ صاحب ریپو: «سایتِ کیو‌آر گیج‌کننده است… همه‌چی دقیق باشد، همان
+     مدل که توی برنامه هست.» پس: سربرگِ حساب، الباقیِ درشت (همان عددِ
+     برنامه)، سه عددِ دیگر کنارش، پطرول و دیزل دو کارتِ جدا، و فیلترِ ماه
+     یک کشویی به‌جای ده‌ها دکمه. ⛔ هیچ عددی این‌جا ساخته نمی‌شود — هر عدد
+     همان رشته‌ای است که برنامهٔ کامپیوتر در کیو‌آر گذاشته. */
+  :root{
+    --bg:#0b1220; --card:#121b2b; --card2:#172236; --line:#22314a; --txt:#e8eef8;
+    --muted:#94a6c2; --accent:#f59e0b; --on-accent:#1b1200; --ok:#22c55e; --red:#ef4444; --chip:#1a2539;
+    --info:#60a5fa; --info-bg:rgba(96,165,250,.14); --hot-bg:rgba(245,158,11,.12);
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f2f4f8; --card:#fff; --card2:#f7f9fc; --line:#e2e7ef; --txt:#0f172a;
+           --muted:#5b6b84; --accent:#c26a00; --on-accent:#fff; --chip:#eef2f7; --ok:#15803d; --red:#dc2626;
+           --info:#1d4ed8; --info-bg:#eaf1fe; --hot-bg:#fff6e6; }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--txt);font-size:15px;
+       font-family:Vazirmatn,system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+       padding:12px 12px calc(96px + env(safe-area-inset-bottom));line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+        padding:14px;margin-bottom:12px}
+  h1{font-size:1.3rem;margin:0;line-height:1.4}
+  h2{font-size:.92rem;margin:0 0 10px;color:var(--txt);font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .sub{color:var(--muted);font-size:.8rem}
+  .v,.big,td,.fig .v{font-variant-numeric:tabular-nums}
+  /* ── سربرگِ حساب ── */
+  .head{display:flex;gap:12px;align-items:center}
+  .av{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-weight:900;font-size:1.35rem;
+      background:var(--hot-bg);color:var(--accent);flex:none}
+  .head .t{flex:1;min-width:0}
+  .ro{display:inline-flex;align-items:center;gap:4px;background:var(--info-bg);color:var(--info);
+      border-radius:999px;padding:1px 10px;font-size:.72rem;font-weight:800;white-space:nowrap}
+  /* ── عددها ── */
+  .hero{border-radius:14px;padding:14px;background:var(--hot-bg);border:1px solid var(--accent);margin-top:12px}
+  .hero .l{font-size:.82rem;color:var(--muted);font-weight:700}
+  .hero .big{font-size:2rem;font-weight:900;unicode-bidi:plaintext;text-align:right;line-height:1.3}
+  .hero .big small{font-size:.9rem;color:var(--muted);font-weight:700}
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:10px}
+  .fig{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:9px 11px;min-width:0}
+  .fig .l{color:var(--muted);font-size:.74rem}
+  .fig .v{font-size:1.05rem;font-weight:800;unicode-bidi:plaintext;text-align:right;overflow-wrap:anywhere}
+  .fig .v small{display:block;color:var(--muted);font-size:.7rem;font-weight:700}
+  .fig.hot{border-color:var(--accent);background:var(--hot-bg)}
+  .fuels{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+  .fuel{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:11px 12px}
+  .fuel b{display:block;margin-bottom:4px}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px dashed var(--line);font-size:.86rem}
+  .kv:last-child{border-bottom:0}
+  .kv span{color:var(--muted)} .kv strong{unicode-bidi:plaintext;font-variant-numeric:tabular-nums}
+  .kv.hot strong{color:var(--accent);font-size:1rem}
+  /* ── جدول ── */
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px}
+  table{border-collapse:collapse;width:100%;min-width:520px;font-size:.84rem}
+  .mini table{min-width:0}
+  th,td{border-bottom:1px solid var(--line);padding:8px 7px;text-align:center;white-space:nowrap}
+  th{background:var(--card2);color:var(--muted);font-weight:800}
+  tbody tr:nth-child(even) td{background:var(--card2)}
+  tfoot td{font-weight:900;background:var(--hot-bg);border-bottom:0}
+  td:first-child,th:first-child{color:var(--muted)}
+  /* ── جدول روی گوشی: هر ردیف یک کارت، هر عدد با نامِ ستونش ────────────
+     پیش از این جدول از صفحهٔ گوشی بیرون می‌زد و «رسید» و «الباقی» دیده
+     نمی‌شد مگر با لغزاندنِ افقی. فقط ظاهر است؛ ردیف‌ها و عددها همان‌اند. */
+  @media (max-width:600px){
+    .scroll.cards{overflow:visible;border:0;border-radius:0}
+    .cards table{min-width:0;display:block}
+    .cards thead{display:none}
+    .cards tbody,.cards tfoot{display:grid;gap:8px}
+    .cards tfoot{margin-top:8px}
+    .cards tr{display:grid;grid-template-columns:1fr 1fr;column-gap:14px;border:1px solid var(--line);border-radius:12px;background:var(--card2);padding:4px 12px 6px}
+    .cards tfoot tr{border-color:var(--accent);background:var(--hot-bg,var(--card2))}
+    .cards td{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border:0;
+              border-bottom:1px dashed var(--line);padding:6px 0;white-space:normal;background:transparent!important;
+              text-align:left;unicode-bidi:plaintext;font-weight:700;color:var(--txt)}
+    .cards td::before{content:attr(data-l);color:var(--muted);font-weight:600;font-size:.78rem;text-align:right;flex:none}
+    .cards td.e::after{content:'—';color:var(--muted);font-weight:400}
+    .cards td[data-l="الباقی"]{color:var(--accent);font-weight:900}
+    .cards td.rn{justify-content:flex-start;gap:6px;color:var(--muted);font-size:.8rem}
+    .cards td.rn::before{content:'ردیف'}
+    .cards td.t0{font-weight:900}
+  }
+  .note{color:var(--muted);font-size:.8rem;margin-top:8px;text-align:center}
+  .err{border-color:var(--red);color:var(--red)}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card2);color:var(--txt);
+       border-radius:12px;padding:9px 16px;font-weight:700;cursor:pointer;font-size:.88rem;font-family:inherit;min-height:42px}
+  /* ── فیلترها — «ویرایش» نیستند، فقط می‌گویند چه دیده شود ── */
+  .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+  .filters label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:3px}
+  .seg{display:flex;background:var(--chip);border:1px solid var(--line);border-radius:12px;padding:3px}
+  .chip{flex:1;border:0;background:transparent;color:var(--txt);border-radius:9px;padding:7px 6px;font-size:.82rem;
+        font-weight:700;cursor:pointer;font-family:inherit;min-height:36px}
+  .chip.on{background:var(--accent);color:var(--on-accent)}
+  select{width:100%;background:var(--chip);color:var(--txt);border:1px solid var(--line);border-radius:12px;
+         padding:8px 10px;font-family:inherit;font-size:.86rem;min-height:44px}
+  .count{font-size:.74rem;color:var(--muted);font-weight:700}
+  /* ── تبِ دفترها ── */
+  .tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:12px;
+        position:sticky;top:6px;z-index:5}
+  .tab{flex:1;border:0;background:transparent;color:var(--txt);border-radius:11px;padding:8px 10px;font-weight:800;
+       cursor:pointer;font-size:.92rem;font-family:inherit;line-height:1.35}
+  .tab .sub{font-weight:600}
+  .tab.on{background:var(--accent);color:var(--on-accent)} .tab.on .sub{color:var(--on-accent);opacity:.8}
+  details.arc summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-weight:800}
+  details.arc summary::-webkit-details-marker{display:none}
+  details.arc summary::after{content:'▾';margin-inline-start:auto;color:var(--muted)}
+  details.arc[open] summary::after{content:'▴'}
+  details.arc[open] summary{margin-bottom:10px}
+  /* ── نشانِ کیو‌آرِ زنده ── */
+  .live{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+        margin-top:12px;padding:6px 6px 6px 10px;border-radius:12px;background:var(--chip);font-size:.8rem}
+  .live .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#9aa3ad;
+             margin-inline-end:6px;vertical-align:middle}
+  .live.ok .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.25)}
+  .live.off .dot{background:var(--red)}
+  .live .btn{padding:4px 12px;font-size:.78rem;min-height:34px}
+  /* ── چتِ پشتیبانی ───────────────────────────────────────────────────────
+     دکمهٔ شناور پایینِ صفحه، و صفحهٔ چت که تمام‌صفحه رویش می‌نشیند. */
+  .pump{font-weight:900;color:var(--accent);font-size:.95rem;margin-bottom:8px}
+  .fab{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));left:16px;z-index:40;border:0;border-radius:999px;
+       background:var(--accent);color:var(--on-accent);font-weight:800;font-size:.95rem;font-family:inherit;
+       padding:8px 12px;box-shadow:0 6px 16px rgba(0,0,0,.22);cursor:pointer;display:flex;
+       align-items:center;gap:6px;opacity:.92}
+  .live .lbtns{display:flex;gap:6px;flex-wrap:wrap}
+  .live .n{background:var(--red);color:#fff;border-radius:999px;font-size:.7rem;padding:0 6px}
+  .fab .n{background:var(--red);color:#fff;border-radius:999px;font-size:.72rem;padding:1px 7px;min-width:20px;text-align:center}
+  .chat{position:fixed;top:0;right:0;bottom:0;left:0;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column}
+  .chat.hidden{display:none}
+  .chat-head{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);
+             border-bottom:1px solid var(--line)}
+  .chat-head .t{flex:1;min-width:0}
+  .chat-head .t b{display:block;font-size:1rem}
+  .chat-head .t span{display:block;color:var(--muted);font-size:.74rem}
+  .chat-body{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:6px;
+             -webkit-overflow-scrolling:touch}
+  .msg{max-width:82%;border-radius:14px 14px 14px 4px;padding:8px 11px;background:var(--card);border:1px solid var(--line);
+       align-self:flex-start;position:relative;font-size:.92rem;word-break:break-word}
+  .msg.me{align-self:flex-end;background:var(--info-bg);border-color:transparent;border-radius:14px 14px 4px 14px}
+  .msg .who{font-size:.72rem;color:var(--accent);font-weight:800}
+  .msg .when{font-size:.66rem;color:var(--muted);text-align:left;margin-top:2px}
+  .msg .del{position:absolute;top:-8px;left:-8px;border:1px solid var(--line);background:var(--card);
+            color:var(--muted);border-radius:999px;width:22px;height:22px;font-size:.7rem;line-height:20px;
+            text-align:center;cursor:pointer;padding:0}
+  .msg.gone{color:var(--muted);font-style:italic;font-size:.8rem}
+  .msg img,.msg video{max-width:100%;border-radius:10px;display:block;margin-top:4px}
+  .msg .dim{font-size:.8rem;color:var(--muted)}
+  .msg audio{width:220px;max-width:100%;margin-top:4px}
+  .chat-foot{display:flex;align-items:center;gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)}
+  .chat-foot input[type=text]{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--txt);
+                              border-radius:999px;padding:10px 14px;font-size:.95rem;font-family:inherit}
+  .chat-foot .ic{border:1px solid var(--line);background:var(--bg);color:var(--txt);border-radius:999px;
+                 width:42px;height:42px;font-size:1.05rem;cursor:pointer;flex:0 0 auto}
+  .chat-foot .ic.on{background:var(--red);color:#fff;border-color:var(--red)}
+  .chat-foot .send{background:var(--accent);color:var(--on-accent);border:0;border-radius:999px;padding:0 16px;height:42px;
+                   font-weight:800;cursor:pointer;flex:0 0 auto;font-family:inherit}
+  .chat-name{display:flex;gap:6px;padding:8px;background:var(--card);border-top:1px solid var(--line)}
+  .chat-name input{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--txt);border-radius:10px;
+                   padding:9px 12px;font-family:inherit}
+  .chat-note{text-align:center;color:var(--muted);font-size:.78rem;padding:6px}
+  .msg .tick{font-size:.66rem;color:var(--muted);margin-inline-start:4px}
+  .msg .tick.seen{color:var(--accent);font-weight:800}
+  .msg img{cursor:zoom-in}
+  .chat-day{align-self:center;background:var(--card);border:1px solid var(--line);color:var(--muted);
+            font-size:.72rem;border-radius:999px;padding:2px 10px;margin:4px 0}
+  .chat-new{position:absolute;left:50%;transform:translateX(-50%);bottom:74px;z-index:2;border:0;border-radius:999px;
+            background:var(--accent);color:var(--on-accent);font:inherit;font-size:.8rem;font-weight:800;padding:6px 14px;
+            box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+  .chat-rec{color:var(--red);font-size:.8rem;font-weight:800;white-space:nowrap}
+  .chat-err{background:rgba(229,62,62,.12);color:var(--red);text-align:center;padding:6px;font-size:.8rem}
+  .chat-lb{position:fixed;top:0;right:0;bottom:0;left:0;inset:0;z-index:60;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center}
+  .chat-lb img{max-width:96vw;max-height:88vh;border-radius:8px}
+  .chat-lb button{position:absolute;top:12px;right:12px;border:0;border-radius:999px;width:40px;height:40px;
+                  background:#fff;color:#000;font-size:1.1rem;cursor:pointer}
+  .chat-blocked{background:rgba(229,62,62,.12);color:var(--red);text-align:center;padding:8px;font-size:.85rem}
+  @media print{.fab,.chat{display:none!important}}
+  @media print{
+    body{background:#fff;color:#000;padding:0}
+    .card{border-color:#999}
+    .noprint{display:none!important}
+    table{min-width:0}
+    details.arc > *{display:block}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="card"><div class="sub">در حالِ باز کردن…</div></div>
+</div>
+
+<script>
+(function () {
+  var app = document.getElementById('app');
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fail(msg, detail) {
+    app.innerHTML = '<div class="card err"><h1>باز نشد</h1><div class="sub">' +
+      esc(msg) + (detail ? '<br>' + esc(detail) : '') + '</div></div>';
+  }
+
+  // base64url → بایت‌ها
+  function b64(s) {
+    s = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    var bin = atob(s), out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+
+  // بازکردنِ فشرده — همان deflateِ خامِ برنامه
+  function inflate(bytes) {
+    if (typeof DecompressionStream !== 'function') return Promise.reject('old-browser');
+    var ds = new DecompressionStream('deflate-raw');
+    var s = new Blob([bytes]).stream().pipeThrough(ds);
+    return new Response(s).text();
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  عدد — برنامه با رقمِ لاتین و «,» می‌نویسد (Shamsi.Money)
+  // ══════════════════════════════════════════════════════════════════════
+
+  function num(s) {
+    var t = String(s == null ? '' : s).replace(/[,٬\s$]/g, '')
+      .replace(/[۰-۹]/g, function (c) { return c.charCodeAt(0) - 0x06F0; })
+      .replace(/[٠-٩]/g, function (c) { return c.charCodeAt(0) - 0x0660; });
+    var v = parseFloat(t);
+    return isFinite(v) ? v : 0;
+  }
+
+  function fmt(v) {
+    var neg = v < 0; v = Math.abs(v);
+    var s = (Math.round(v * 100) / 100).toLocaleString('en-US', { maximumFractionDigits: 2 });
+    return (neg ? '−' : '') + s;
+  }
+
+  // «1405/06/23» ⇒ «1405/06» · «1405/06» ⇒ خودش
+  function monthOf(s) {
+    //  ⛔ تاریخی که با رقمِ فارسی یا «-»/«.» نوشته شده هم ماه دارد (۱۴۰۵/۰۷/۱۶) —
+    //  پیش از این با صافیِ ماه ناپدید می‌شد.
+    var t = String(s || '').replace(/[۰-۹]/g, function (d) { return String(d.charCodeAt(0) - 0x06F0); })
+                           .replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x0660); });
+    var m = /^\s*(\d{4})\s*[\/\-.]\s*(\d{1,2})/.exec(t);
+    return m ? m[1] + '/' + (m[2].length < 2 ? '0' + m[2] : m[2]) : '';
+  }
+  function yearOf(s) { var m = monthOf(s); return m ? m.slice(0, 4) : ''; }
+
+  var MONTHS = ['حمل','ثور','جوزا','سرطان','اسد','سنبله',
+                'میزان','عقرب','قوس','جدی','دلو','حوت'];
+  function monthLabel(key) {
+    var m = /^(\d{4})\/(\d{2})$/.exec(key || '');
+    if (!m) return key || '';
+    var i = parseInt(m[2], 10);
+    return (MONTHS[i - 1] || m[2]) + ' ' + m[1];
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  تکه‌های صفحه
+  // ══════════════════════════════════════════════════════════════════════
+
+  /** «الباقی» درشت و جدا (همان عددِ اصلیِ برنامه)، بقیه کنارِ هم و کوچک. */
+  function figsHtml(list, unit, hotLabel) {
+    if (!list || !list.length) return '';
+    var u = unit ? ' <small>' + esc(unit) + '</small>' : '';
+    var hot = null, rest = [];
+    for (var i = 0; i < list.length; i++) {
+      if (!hot && hotLabel && list[i][0] === hotLabel) hot = list[i]; else rest.push(list[i]);
+    }
+    var h = '';
+    if (hot) h += '<div class="hero"><div class="l">' + esc(hot[0]) + '</div>' +
+                  '<div class="big">' + esc(hot[1]) + u + '</div></div>';
+    if (rest.length) {
+      h += '<div class="figs">';
+      for (var k = 0; k < rest.length; k++)
+        h += '<div class="fig"><div class="l">' + esc(rest[k][0]) + '</div><div class="v">' + esc(rest[k][1]) + u + '</div></div>';
+      h += '</div>';
+    }
+    return h;
+  }
+
+  function tableHtml(head, rows, opts) {
+    opts = opts || {};
+    if (!rows || !rows.length) {
+      return '<div class="note">' + esc(opts.empty || 'ردیفی نیست.') + '</div>';
+    }
+    //  ‎data-l‎ = نامِ ستون: روی گوشی هر ردیف یک کارت است و هر عدد نامِ
+    //  ستونش را کنارش دارد — هیچ ستونی از صفحه بیرون نمی‌زند.
+    var hd = head || [];
+    var h = '<div class="scroll cards' + (opts.mini ? ' mini' : '') + '"><table><thead><tr>';
+    if (opts.numbered) h += '<th>#</th>';
+    for (var c = 0; c < hd.length; c++) h += '<th>' + esc(hd[c]) + '</th>';
+    h += '</tr></thead><tbody>';
+    for (var r = 0; r < rows.length; r++) {
+      h += '<tr>';
+      if (opts.numbered) h += '<td class="rn" data-l="ردیف">' + (r + 1) + '</td>';
+      for (var k = 0; k < rows[r].length; k++) {
+        var cell = rows[r][k];
+        var empty = cell === undefined || cell === null || String(cell).trim() === '';
+        h += '<td data-l="' + esc(hd[k] || '') + '"' + (k === 0 ? ' class="t0"' : empty ? ' class="e"' : '') + '>' + esc(cell) + '</td>';
+      }
+      h += '</tr>';
+    }
+    h += '</tbody>';
+    if (opts.foot && opts.foot.length) {
+      h += '<tfoot><tr>';
+      if (opts.numbered) h += '<td></td>';
+      for (var f = 0; f < opts.foot.length; f++)
+        h += '<td data-l="' + esc(hd[f] || '') + '"' + (f === 0 ? ' class="t0"' : '') + '>' + esc(opts.foot[f]) + '</td>';
+      h += '</tr></tfoot>';
+    }
+    return h + '</table></div>';
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  آرشیو — ماه‌به‌ماه از خودِ کد، سال‌به‌سال از جمعِ همان‌ها
+  //
+  //  ⚠️ آرشیو از ردیف‌های جدول ساخته نمی‌شود: ممکن است ردیف‌های قدیمی برای
+  //  جا شدن در کیو‌آر کم شده باشند و آن‌وقت ماه‌های قدیمی هم گم می‌شدند.
+  //  برنامه آرشیو را روی **همهٔ** ردیف‌ها حساب می‌کند و کامل می‌فرستد.
+  // ══════════════════════════════════════════════════════════════════════
+
+  function yearsOf(archive) {
+    var by = {}, order = [];
+    for (var i = 0; i < archive.length; i++) {
+      var y = yearOf(archive[i][0]);
+      if (!y) continue;
+      if (!by[y]) { by[y] = [0, 0]; order.push(y); }
+      by[y][0] += num(archive[i][1]);
+      by[y][1] += num(archive[i][2]);
+    }
+    order.sort();
+    return order.map(function (y) {
+      return [y, fmt(by[y][0]), fmt(by[y][1]), fmt(by[y][0] - by[y][1])];
+    });
+  }
+
+  function archiveCard(book) {
+    var a = book.g || [];
+    if (!a.length) return '';
+
+    var head = ['ماه', 'بردگی', 'رسید / پرداخت', 'تفاوت'];
+    var months = a.map(function (r) { return [monthLabel(r[0]), r[1], r[2], r[3]]; });
+    var tot = [0, 0];
+    for (var i = 0; i < a.length; i++) { tot[0] += num(a[i][1]); tot[1] += num(a[i][2]); }
+
+    var years = yearsOf(a);
+    var h = '<div class="card"><details class="arc"' + (state.arc ? ' open' : '') + '><summary>🗂️ آرشیو — هر ماه چقدر برد و چقدر تحویل داد'
+          + (book.u ? ' (' + esc(book.u) + ')' : '') + ' <span class="count">' + a.length + ' ماه</span></summary>';
+    h += tableHtml(head, months, {
+      foot: ['جمعِ کل', fmt(tot[0]), fmt(tot[1]), fmt(tot[0] - tot[1])]
+    });
+    if (years.length > 1) {
+      h += '<h2 style="margin-top:14px">📅 سال‌به‌سال</h2>';
+      h += tableHtml(['سال', 'بردگی', 'رسید / پرداخت', 'تفاوت'], years);
+    }
+    return h + '</details></div>';
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  یک دفتر
+  // ══════════════════════════════════════════════════════════════════════
+
+  var state = { book: 0, fuel: '', month: '', arc: false };
+
+  function bookCard(book) {
+    var h = '';
+
+    h += '<div class="card">';
+    h += '<h2>📊 خلاصهٔ ' + esc(book.k || 'حساب') + (book.u ? ' <span class="count">(به ' + esc(book.u) + ')</span>' : '') + '</h2>';
+    h += figsHtml(book.s, book.u, 'الباقی');
+    h += '</div>';
+
+    // ── تفکیکِ تیل: هر تیل یک کارت، ستون‌ها همان ستون‌های برنامه ─────────────
+    if (book.f && book.f.length) {
+      var fh = book.fh || ['تیل', 'بردگی', 'رسید', 'فیصدی', 'الباقی'];
+      h += '<div class="card"><h2>⛽ پطرول و دیزل — جدا از هم</h2><div class="fuels">';
+      book.f.forEach(function (row) {
+        h += '<div class="fuel"><b>' + (/دیزل/.test(row[0]) ? '🔵 ' : '🟠 ') + esc(row[0]) + '</b>';
+        for (var c = 1; c < row.length; c++)
+          h += '<div class="kv' + (c === row.length - 1 ? ' hot' : '') + '"><span>' + esc(fh[c] || '') + '</span><strong>' + esc(row[c]) + '</strong></div>';
+        h += '</div>';
+      });
+      h += '</div></div>';
+    }
+
+    h += rowsCard(book);
+    h += archiveCard(book);
+    return h;
+  }
+
+  /// ردیف‌هایی که با فیلترهای همین لحظه دیده می‌شوند.
+  function visibleRows(book) {
+    var rows = book.r || [];
+    var fc = typeof book.fc === 'number' ? book.fc : -1;
+    var dc = typeof book.dc === 'number' ? book.dc : -1;
+    return rows.filter(function (r) {
+      if (state.fuel && fc >= 0 && r[fc] !== state.fuel) return false;
+      if (state.month && dc >= 0 && monthOf(r[dc]) !== state.month) return false;
+      return true;
+    });
+  }
+
+  function rowsCard(book) {
+    var fc = typeof book.fc === 'number' ? book.fc : -1;
+    var dc = typeof book.dc === 'number' ? book.dc : -1;
+    var h = '<div class="card"><h2>📋 ردیف‌ها <span class="ro">👁 فقط خواندنی</span></h2>';
+
+    // ── فیلترها: تیل با سه دکمه، ماه با یک کشویی ─────────────────────────
+    var months = (book.g || []).map(function (r) { return r[0]; });
+    var hasMonth = dc >= 0 && months.length;
+    if (fc >= 0 || hasMonth) {
+      h += '<div class="filters noprint">';
+      if (fc >= 0) {
+        h += '<div><label>تیل</label><div class="seg">';
+        ['', 'پطرول', 'دیزل'].forEach(function (f) {
+          h += '<button class="chip' + (state.fuel === f ? ' on' : '') +
+               '" data-act="fuel" data-v="' + esc(f) + '">' + (f || 'هر دو') + '</button>';
+        });
+        h += '</div></div>';
+      }
+      // ماه‌ها از آرشیو می‌آیند، نه از ردیف‌های دیده‌شونده — تا ماهی که ردیفش
+      // در کد جا نشده هم در فهرست باشد و مشتری بداند هست.
+      if (hasMonth) {
+        h += '<div><label>ماه</label><select data-act="month-sel"><option value="">همهٔ ماه‌ها</option>';
+        months.slice().reverse().forEach(function (m) {
+          h += '<option value="' + esc(m) + '"' + (state.month === m ? ' selected' : '') + '>' + esc(monthLabel(m)) + '</option>';
+        });
+        h += '</select></div>';
+      }
+      h += '</div>';
+    }
+
+    var rows = visibleRows(book);
+    h += tableHtml(book.h, rows, {
+      numbered: true,
+      empty: (state.fuel || state.month)
+        ? 'با این فیلتر ردیفی نیست — دکمهٔ «همه» را بزنید.'
+        : 'ردیفی نیست.'
+    });
+
+    var note = book.n || '';
+    if (rows.length !== (book.r || []).length)
+      note = (note ? note + ' · ' : '') + rows.length + ' ردیف از ' + (book.r || []).length + ' نشان داده شد.';
+    if (note) h += '<div class="note">' + esc(note) + '</div>';
+
+    return h + '</div>';
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  //  صفحه
+  // ══════════════════════════════════════════════════════════════════════
+
+  var data = null;
+
+  function render() {
+    var d = data;
+    var books = d.b && d.b.length ? d.b : null;
+    var h = '';
+
+    h += '<div class="card">';
+    //  ⛔ نامِ خودِ پمپ (‎p‎، از ۱۴۰۵/۰۷/۱۶) — کیو‌آرِ کهنه‌تر آن را ندارد
+    if (d.p) h += '<div class="pump">⛽ ' + esc(d.p) + '</div>';
+    h += '<div class="head"><div class="av">' + esc(String(d.n || 'ح').charAt(0)) + '</div><div class="t">';
+    h += '<h1>' + esc(d.n || 'حساب') + '</h1>';
+    if (d.a) h += '<div class="sub">' + esc(d.a) + '</div>';
+    h += '<div class="sub">' + esc(d.t || '') + (d.d ? ' · تا تاریخِ <span dir="ltr">' + esc(d.d) + '</span>' : '') + '</div>';
+    h += '</div></div>';
+    h += '<div style="margin-top:8px"><span class="ro">👁 فقط دیدن — هیچ عددی از این صفحه عوض نمی‌شود</span></div>';
+    if (!books) h += figsHtml(d.s, d.u, 'الباقی');
+    h += liveHtml();
+    h += '</div>';
+
+    if (books) {
+      if (books.length > 1) {
+        // ⚠️ «بتواند با دکمه‌ها واحدها را عوض کند» — همین تب‌ها. عوض کردنِ
+        // تب هیچ چیزی را نمی‌نویسد، فقط دفترِ دیگر را نشان می‌دهد.
+        h += '<div class="tabs noprint">';
+        books.forEach(function (b, i) {
+          h += '<button class="tab' + (state.book === i ? ' on' : '') +
+               '" data-act="book" data-v="' + i + '">' + esc(b.k || ('دفتر ' + (i + 1))) +
+               '<div class="sub" style="font-weight:600">' + esc(b.u || '') + '</div></button>';
+        });
+        h += '</div>';
+      }
+      h += bookCard(books[Math.min(state.book, books.length - 1)]);
+    } else {
+      // ══ شکلِ قدیم — کدهای چاپ‌شده ═══════════════════════════════════════
+      h += '<div class="card"><h2>📋 ردیف‌ها <span class="ro">فقط خواندنی</span></h2>';
+      h += tableHtml(d.h, d.r, { numbered: true });
+      if (d.m) h += '<div class="note">' + esc(d.m) + '</div>';
+      h += '</div>';
+    }
+
+    h += '<div class="card noprint" style="text-align:center">' +
+         '<button class="btn" data-act="print">🖨️ چاپ / ذخیره PDF</button>' +
+         '<div class="note">این صفحه فقط نشان می‌دهد؛ هیچ چیزی از این‌جا عوض نمی‌شود. ' +
+         'عددها همان عددهای دفترِ پمپ‌اند؛ اگر پرسشی دارید با «💬 پیام» بپرسید.</div></div>';
+
+    //  دکمهٔ شناور فقط وقتی پیامِ نخوانده هست — و کوچک، فقط نشانه و شمار
+    if (live && chatUnread > 0) {
+      h += '<button class="fab noprint" data-act="chat-open" aria-label="پیامِ تازه">💬' +
+           '<span class="n">' + chatUnread + '</span></button>';
+    }
+
+    app.innerHTML = h;
+    if (d.n) document.title = d.n + ' — ' + (d.p || 'پمپ بنزین');
+    chatRender();
+  }
+
+  //  ⛔ یک شنونده برای صفحه و برای چت (۱۴۰۵/۰۷/۱۶): چت بیرونِ ‎app‎ می‌نشیند
+  //  (‎document.body‎) و تا امروز هیچ‌کدام از دکمه‌هایش — «ادامه»، ▶، 📎، 🎤، ✕،
+  //  → و 🔔 — شنونده‌ای نداشتند؛ فقط Enter کار می‌کرد.
+  app.addEventListener('click', onAct);
+  function onAct(e) {
+    var t = e.target.closest('[data-act]');
+    if (!t) return;
+    var v = t.getAttribute('data-v');
+    switch (t.getAttribute('data-act')) {
+      case 'print': window.print(); return;
+      case 'refresh': liveCheck(); return;
+      case 'chat-open': chatOpen(); return;
+      case 'chat-close': chatClose(); return;
+      case 'chat-send': chatSendText(); return;
+      case 'chat-name': chatSetName(); return;
+      case 'chat-del': chatDelete(v); return;
+      case 'chat-push': chatPush(); return;
+      case 'chat-attach': chatAttach(); return;
+      case 'chat-rec': chatRecord(); return;
+      case 'chat-img': chatZoom(v); return;
+      case 'chat-zoom-close': chatZoom(''); return;
+      case 'chat-down': chatDown(); return;
+      // ⚠️ با عوض شدنِ دفتر، فیلترها صفر می‌شوند: ماهِ دفترِ تیل ممکن است در
+      // دفترِ پول اصلاً نباشد و مشتری جدولی خالی می‌دید بی این‌که بفهمد چرا.
+      case 'book': state.book = parseInt(v, 10) || 0; state.fuel = ''; state.month = ''; break;
+      case 'fuel': state.fuel = v; break;
+      case 'month': state.month = v; break;
+      default: return;
+    }
+    render();
+  }
+
+  // کشوییِ ماه — همان کارِ دکمهٔ «ماه»، فقط یک فیلتر است
+  app.addEventListener('change', function (e) {
+    var t = e.target;
+    if (!t || !t.getAttribute || t.getAttribute('data-act') !== 'month-sel') return;
+    state.month = t.value || '';
+    render();
+  });
+  // باز و بسته بودنِ آرشیو با عوض شدنِ فیلتر از یاد نرود
+  app.addEventListener('toggle', function (e) {
+    var t = e.target;
+    if (t && t.classList && t.classList.contains('arc')) state.arc = !!t.open;
+  }, true);
+
+  // ══ کیو‌آرِ زنده ══════════════════════════════════════════════════════
+  //
+  // ⚠️ نشانیِ ابر این‌جا قفل است — نه از نشانی، نه از حافظه. (شرحش بالای
+  // صفحه.) اگر روزی ابر جای دیگری رفت، همین یک خط عوض می‌شود.
+  var LIVE_API = 'https://api.vill3n.top';
+  var LIVE_EVERY = 60 * 1000;
+  // ⛔ «درجا» (۱۴۰۵/۰۷/۲۱): تا صفحه جلوی چشم است هر ۱۵ ثانیه، و صفحهٔ پنهان هیچ
+  // (همان ‎visibilitychange‎ِ پایین سرِ برگشتن همان لحظه می‌پرسد). یک ‎SELECT‎ِ کوچک
+  // روی سرورِ حساب — و فقط برای گوشی‌ای که همین حالا نگاه می‌کند.
+  var LIVE_VISIBLE_EVERY = 5 * 1000; // ⛔ ۳.۱.۲۶۶: بود ۱۵ — سقفِ سرور ۶۰۰ در ربع ساعت، این ۱۸۰
+  function pageHidden() {
+    return typeof document !== 'undefined' && document.visibilityState === 'hidden';
+  }
+
+  var live = null;                               // {s, a, k, t} یا null
+  var liveAt = 0;                                // زمانِ عکسی که حالا روی صفحه است
+  var liveStatus = '';                           // '' · 'wait' · 'ok' · 'off' · 'none'
+  var liveWhen = '';                             // ساعتِ آخرین بررسیِ موفق
+  var liveBusy = false;
+
+  function liveParse(hash) {
+    var g = function (k) {
+      var r = new RegExp('(?:^|&)' + k + '=([^&]*)').exec(hash);
+      return r ? decodeURIComponent(r[1]) : '';
+    };
+    var s = g('s'), a = g('a'), k = g('k');
+    if (!s || !a || !k) return null;
+    return { s: s, a: a, k: k, t: parseInt(g('t'), 10) || 0 };
+  }
+
+  function liveUrl() {
+    return LIVE_API + '/api/pump/public/' + encodeURIComponent(live.s) +
+           '/acct/' + encodeURIComponent(live.a) + '?k=' + encodeURIComponent(live.k);
+  }
+
+  function clock() {
+    try {
+      return new Date().toLocaleTimeString('fa-AF', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      var n = new Date();
+      return (n.getHours() < 10 ? '0' : '') + n.getHours() + ':' + (n.getMinutes() < 10 ? '0' : '') + n.getMinutes();
+    }
+  }
+
+  // نشانِ زنده در کادرِ بالا — فقط وقتی کیو‌آر زنده است.
+  function liveHtml() {
+    if (!live) return '';
+    var cls = liveStatus === 'ok' ? ' ok' : liveStatus === 'off' ? ' off' : '';
+    var txt;
+    switch (liveStatus) {
+      case 'ok':   txt = 'زنده — آخرین بررسی ' + liveWhen; break;
+      case 'off':  txt = 'به اینترنت نرسید — عددهای داخلِ همین کیو‌آر'; break;
+      case 'none': txt = 'هنوز نسخهٔ تازه‌تری نیامده — عددهای داخلِ همین کیو‌آر'; break;
+      case 'wait': txt = 'در حالِ بررسی…'; break;
+      default:     txt = 'عددهای داخلِ همین کیو‌آر';
+    }
+    //  ⛔ درِ چت کنارِ «به‌روز کن» است، کوچک — نه دکمهٔ شناورِ بزرگی که روی
+    //  عددهای حساب می‌نشست (۱۴۰۵/۰۷/۱۶: «پیام‌رسان این‌قدر جا گرفته»).
+    return '<div class="live noprint' + cls + '"><span><span class="dot"></span>' + esc(txt) +
+           '</span><span class="lbtns"><button class="btn" data-act="chat-open">💬 پیام' +
+           (chatUnread > 0 ? ' <span class="n">' + chatUnread + '</span>' : '') + '</button>' +
+           '<button class="btn" data-act="refresh">🔄 به‌روز کن</button></span></div>';
+  }
+
+  // یک بار بپرس. اگر عکسِ ابر تازه‌تر از چیزی بود که روی صفحه است، جایش
+  // می‌گذارد؛ وگرنه فقط ساعتِ بررسی را نو می‌کند. هیچ‌وقت خطا بیرون نمی‌دهد.
+  function liveCheck() {
+    if (!live || liveBusy || typeof fetch !== 'function') return Promise.resolve(false);
+    liveBusy = true;
+    liveStatus = 'wait';
+    if (data) render();
+    return fetch(liveUrl(), { cache: 'no-store' })
+      .then(function (r) {
+        if (r.status === 404) return { none: true };
+        if (!r.ok) throw new Error('http ' + r.status);
+        return r.json();
+      })
+      .then(function (j) {
+        var fresh = false;
+        if (j && j.none) {
+          liveStatus = 'none';
+        } else {
+          var at = j && typeof j.at === 'number' ? j.at : 0;
+          // ⛔ زمانی که از آینده آمده (ساعتِ کامپیوترِ پمپ آن لحظه جلو بود) قفل نیست —
+          // وگرنه عکسِ درستِ بعدی تا رسیدنِ همان آینده رد می‌شد (۱۴۰۵/۰۷/۱۵).
+          if (j && j.d && (at > liveAt || liveAt > Date.now() + 600000)) { data = j.d; liveAt = at; fresh = true; }
+          liveStatus = 'ok';
+          liveWhen = clock();
+        }
+        liveBusy = false;
+        if (data) render();
+        return fresh;
+      })
+      .catch(function () {
+        liveStatus = 'off';
+        liveBusy = false;
+        if (data) render();
+        return false;
+      });
+  }
+
+  function liveStart() {
+    if (!live) return;
+    chatEnsure();
+    liveCheck();
+    chatPull();
+    if (typeof setInterval === 'function') setInterval(function () { if (!chatOpenNow) chatPull(); }, LIVE_EVERY);
+    if (typeof setInterval === 'function') setInterval(function () { if (!pageHidden()) liveCheck(); }, LIVE_VISIBLE_EVERY);
+    // ⚠️ گوشی که از جیب درمی‌آید باید همان لحظه بپرسد، نه تا ۶۰ ثانیهٔ بعد.
+    if (document.addEventListener) {
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') liveCheck();
+      });
+    }
+  }
+
+  // ══ چتِ پشتیبانی ══════════════════════════════════════════════════════
+  //
+  // صفحه فقط با ‎fetch‎ و ‎data-act‎ کار می‌کند تا همان آزمونِ DOMِ کوچک
+  // (‎tools/check-view.mjs‎) بتواند اجرایش کند؛ ‎localStorage‎، ‎navigator‎ و
+  // ‎MediaRecorder‎ همه اختیاری‌اند و نبودشان چیزی را نمی‌شکند.
+  var CHAT_EVERY_OPEN = 8 * 1000;
+  var chatEl = null;                             // ریشهٔ صفحهٔ چت
+  var chatOpenNow = false;
+  var chatMsgs = [];                             // {id, seq, from, name, kind, text, mediaId, at, deleted}
+  var chatSeq = 0;                               // آخرین seq که داریم
+  var chatSeen = 0;                              // تا کجا خوانده‌ایم (پیامِ پمپ)
+  var chatUnread = 0;
+  var chatBlocked = false;
+  var chatName = '';
+  var chatBusy = false;
+  var chatVapid = '';
+  var chatTimer = null;
+  var chatRecorder = null;
+  var chatOwnerSeen = 0;                         // تا کجا صاحبِ پمپ خوانده (برای ✓✓)
+  var chatDraftBack = '';                        // متنی که نرفت — به کادر برمی‌گردد
+  var chatErr = '';                              // چرا نرفت، یک خط
+  var chatRecAt = 0, chatRecTick = null;         // زمانِ ضبط
+  var chatShown = 0;                             // چند پیام پیش از این دیده شد (برای «↓ پیام تازه»)
+
+  function store(key, val) {
+    try {
+      if (val === undefined) return localStorage.getItem(key);
+      localStorage.setItem(key, val);
+    } catch (e) { return null; }
+    return val;
+  }
+
+  function chatUrl(path) {
+    return LIVE_API + '/api/pump/public/' + encodeURIComponent(live.s) +
+           '/acct/' + encodeURIComponent(live.a) + '/chat' + (path || '') + '?k=' + encodeURIComponent(live.k);
+  }
+
+  function chatEnsure() {
+    if (chatEl || !live) return;
+    chatName = store('chat-name-' + live.a) || '';
+    chatSeen = parseInt(store('chat-seen-' + live.a) || '0', 10) || 0;
+    // ⚠️ هیچ‌کدام از این‌ها نباید صفحهٔ حساب را بشکند — چت رفاه است، حساب اصل.
+    try {
+      if (typeof document.createElement !== 'function' || !document.body) return;
+      var el = document.createElement('div');
+      el.className = 'chat hidden noprint';
+      el.setAttribute('id', 'chat');
+      document.body.appendChild(el);
+      if (typeof el.addEventListener === 'function') {
+        el.addEventListener('click', onAct);
+        el.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' && e.target && e.target.id === 'chatText') { e.preventDefault(); chatSendText(); }
+          if (e.key === 'Enter' && e.target && e.target.id === 'chatNameIn') { e.preventDefault(); chatSetName(); }
+        });
+      }
+      chatEl = el;
+    } catch (e) { chatEl = null; }
+  }
+
+  function timeOf(ms) {
+    try { return new Date(ms).toLocaleTimeString('fa-AF', { hour: '2-digit', minute: '2-digit' }); }
+    catch (e) { var n = new Date(ms); return n.getHours() + ':' + (n.getMinutes() < 10 ? '0' : '') + n.getMinutes(); }
+  }
+
+  // ══ رسانه روی همین گوشی ══════════════════════════════════════════════
+  //
+  // ⛔ سرور رسانه را فقط می‌رساند: همین که طرفِ دیگر آن را گرفت، از سرور
+  // پاک می‌شود. پس نسخهٔ ماندگار این‌جاست — IndexedDBِ همین مرورگر — و هر
+  // رسانه **یک بار** از سرور خوانده می‌شود. رسانه‌ای که خودمان فرستادیم
+  // پیش از رفتن همین‌جا می‌نشیند. نبودِ IndexedDB یا ‎createObjectURL‎ (آزمون،
+  // مرورگرِ کهنه) یعنی همان نشانیِ مستقیمِ قدیمی.
+  var MEDIA_DB = 'pump-view-media', MEDIA_KEEP_MS = 180 * 86400000;
+  var mediaUrls = {}, mediaGone = {}, mediaBusy = {}, mediaDbP = null;
+  function mediaLocal() {
+    try { return typeof indexedDB !== 'undefined' && indexedDB && typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function'; }
+    catch (e) { return false; }
+  }
+  function mediaDb() {
+    if (mediaDbP) return mediaDbP;
+    mediaDbP = new Promise(function (ok, no) {
+      var r = indexedDB.open(MEDIA_DB, 1);
+      r.onupgradeneeded = function () { r.result.createObjectStore('m'); };
+      r.onsuccess = function () { ok(r.result); };
+      r.onerror = function () { no(r.error); };
+    });
+    mediaDbP.then(mediaPrune, function () {});
+    return mediaDbP;
+  }
+  function mediaTx(mode, fn) {
+    return mediaDb().then(function (db) {
+      return new Promise(function (ok, no) {
+        var tx = db.transaction('m', mode), st = tx.objectStore('m'), out = fn(st);
+        tx.oncomplete = function () { ok(out && 'result' in out ? out.result : undefined); };
+        tx.onerror = function () { no(tx.error); };
+      });
+    });
+  }
+  function mediaPrune(db) {
+    try {
+      var tx = db.transaction('m', 'readwrite'), cut = Date.now() - MEDIA_KEEP_MS;
+      tx.objectStore('m').openCursor().onsuccess = function (e) {
+        var c = e.target.result; if (!c) return;
+        if (!c.value || (c.value.at || 0) < cut) c.delete();
+        c.continue();
+      };
+    } catch (e) { /* رفاه */ }
+  }
+  function mediaKeep(id, blob) {
+    if (!id || !blob || !mediaLocal()) return Promise.resolve();
+    try { mediaUrls[id] = URL.createObjectURL(blob); } catch (e) {}
+    return mediaTx('readwrite', function (st) { return st.put({ blob: blob, at: Date.now() }, id); }).catch(function () {});
+  }
+  function mediaFetch(id) {
+    if (mediaBusy[id] || mediaUrls[id] || mediaGone[id]) return;
+    mediaBusy[id] = true;
+    mediaTx('readonly', function (st) { return st.get(id); })
+      .catch(function () { return null; })
+      .then(function (row) {
+        if (row && row.blob) return row.blob;
+        return fetch(chatUrl('/media/' + encodeURIComponent(id))).then(function (r) {
+          if (r.status === 404) { mediaGone[id] = true; return null; }
+          return r.ok ? r.blob() : null;
+        }).then(function (b) { if (b) mediaKeep(id, b); return b; });
+      })
+      .then(function (b) {
+        if (b && !mediaUrls[id]) { try { mediaUrls[id] = URL.createObjectURL(b); } catch (e) {} }
+        mediaBusy[id] = false; chatRender();
+      }, function () { mediaBusy[id] = false; });
+  }
+  function mediaHtml(m) {
+    var id = m.mediaId || '';
+    var src = mediaUrls[id];
+    if (!src) {
+      if (!mediaLocal()) src = chatUrl('/media/' + encodeURIComponent(id));
+      else if (mediaGone[id]) return '<span class="dim">📎 این فایل روی گوشیِ شما نیست و سرور هم آن را نگه نمی‌دارد</span>';
+      else { mediaFetch(id); return '<span class="dim">⏳ در حالِ آوردن…</span>'; }
+    }
+    src = esc(src);
+    if (m.kind === 'image') return '<img src="' + src + '" alt="عکس" loading="lazy" data-act="chat-img" data-v="' + src + '">';
+    if (m.kind === 'video') return '<video controls preload="metadata" src="' + src + '"></video>';
+    return '🎤 <audio controls preload="metadata" src="' + src + '"></audio>';
+  }
+
+  function bubble(m) {
+    var me = m.from === 'c';
+    var h = '<div class="msg' + (me ? ' me' : '') + (m.deleted ? ' gone' : '') + '" data-id="' + esc(m.id) + '">';
+    if (!me) h += '<div class="who">' + esc(m.name || 'پمپ') + '</div>';
+    if (m.deleted) h += '🚫 این پیام پاک شد';
+    else if (m.kind === 'image' || m.kind === 'video' || m.kind === 'audio') h += mediaHtml(m);
+    else h += esc(m.text);
+    h += '<div class="when">' + esc(timeOf(m.at)) + (me && !m.deleted ? tickOf(m) : '') + '</div>';
+    if (me && !m.deleted) h += '<button class="del" data-act="chat-del" data-v="' + esc(m.id) + '" title="پاک کردن">✕</button>';
+    return h + '</div>';
+  }
+
+  // ✓ رسید · ✓✓ دیده شد — از ‎ownerSeenSeqِ‎ خودِ سرور، نه حدس
+  function tickOf(m) {
+    var seen = m.seq > 0 && m.seq <= chatOwnerSeen;
+    return '<span class="tick' + (seen ? ' seen' : '') + '">' + (seen ? '✓✓ دیده شد' : '✓ رسید') + '</span>';
+  }
+
+  // «امروز / دیروز / تاریخ» — جداکنندهٔ روز
+  function dayKey(ms) { var d = new Date(ms); return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); }
+  function dayLabel(ms) {
+    var now = new Date(), k = dayKey(ms);
+    if (k === dayKey(now.getTime())) return 'امروز';
+    if (k === dayKey(now.getTime() - 86400000)) return 'دیروز';
+    try { return new Date(ms).toLocaleDateString('fa-AF', { day: 'numeric', month: 'long', year: 'numeric' }); }
+    catch (e) { var d = new Date(ms); return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate(); }
+  }
+
+  function recClock() {
+    var s = Math.max(0, Math.floor((Date.now() - chatRecAt) / 1000));
+    return Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
+  }
+
+  // عکس بزرگ — روی همان صفحه، بی رفتن به جایی
+  function chatZoom(src) {
+    var old = document.getElementById && document.getElementById('chatLb');
+    if (old && old.parentNode) old.parentNode.removeChild(old);
+    if (!src || !chatEl) return;
+    var lb = document.createElement('div');
+    lb.className = 'chat-lb';
+    lb.setAttribute('id', 'chatLb');
+    lb.setAttribute('data-act', 'chat-zoom-close');
+    lb.innerHTML = '<img src="' + esc(src) + '" alt="عکس"><button data-act="chat-zoom-close" title="بستن">✕</button>';
+    chatEl.appendChild(lb);
+  }
+
+  function chatDown() {
+    var body = chatEl && chatEl.querySelector('#chatBody');
+    if (body) body.scrollTop = 1e9;
+    chatShown = chatMsgs.length;
+    var pill = chatEl && chatEl.querySelector('#chatNew');
+    if (pill && pill.parentNode) pill.parentNode.removeChild(pill);
+  }
+
+  // صفحهٔ چت — هر بار از نو؛ کوتاه و ساده‌تر از نگه داشتنِ حالت.
+  function chatRender() {
+    if (!chatEl) return;
+    chatEl.className = 'chat noprint' + (chatOpenNow ? '' : ' hidden');
+    if (!chatOpenNow) return;
+    var draft = '';
+    var old = chatEl.querySelector('#chatText');
+    if (old) draft = old.value;
+    if (!draft && chatDraftBack) { draft = chatDraftBack; }
+    chatDraftBack = '';
+    //  ⚠️ کسی که بالا رفته تا پیامِ کهنه بخواند، با آمدنِ پیامِ تازه پایین پرت نمی‌شود
+    var oldBody = chatEl.querySelector('#chatBody');
+    var atEnd = !oldBody || (oldBody.scrollHeight - oldBody.scrollTop - oldBody.clientHeight) < 60;
+    var keepTop = oldBody ? oldBody.scrollTop : 0;
+
+    var h = '<div class="chat-head"><button class="btn" data-act="chat-close">→</button>' +
+            '<div class="t"><b>پیام به ' + esc((data && data.p) || 'پمپ') + '</b>' +
+            '<span>' + (chatBlocked ? 'گفت‌وگو بسته شده' : chatBusy ? 'در حالِ فرستادن…' : 'پیام‌تان مستقیم به صاحبِ پمپ می‌رسد') + '</span></div>';
+    if (canPush()) h += '<button class="btn" data-act="chat-push" title="با مرورگرِ بسته هم خبر بدهد">🔔 خبرم کن</button>';
+    h += '</div>';
+
+    h += '<div class="chat-body" id="chatBody">';
+    if (!chatMsgs.length) h += '<div class="chat-note">هنوز پیامی نیست. سلام کنید 👋</div>';
+    var lastDay = '';
+    for (var i = 0; i < chatMsgs.length; i++) {
+      var dk = chatMsgs[i].at ? dayKey(chatMsgs[i].at) : '';
+      if (dk && dk !== lastDay) { h += '<div class="chat-day">' + esc(dayLabel(chatMsgs[i].at)) + '</div>'; lastDay = dk; }
+      h += bubble(chatMsgs[i]);
+    }
+    h += '</div>';
+    var fresh = !atEnd && chatMsgs.length > chatShown;
+    if (fresh) h += '<button class="chat-new" id="chatNew" data-act="chat-down">↓ پیامِ تازه</button>';
+    if (chatErr) h += '<div class="chat-err">' + esc(chatErr) + '</div>';
+
+    if (chatBlocked) {
+      h += '<div class="chat-blocked">صاحبِ پمپ این گفت‌وگو را بسته است؛ فقط می‌توانید بخوانید.</div>';
+    } else if (!chatName) {
+      h += '<div class="chat-name"><input id="chatNameIn" placeholder="نامِ شما (تا صاحبِ پمپ بداند کیست)" maxlength="60">' +
+           '<button class="send" data-act="chat-name">ادامه</button></div>' +
+           '<div class="chat-note">فقط یک بار می‌پرسیم.</div>';
+    } else {
+      h += '<div class="chat-foot">' +
+           '<button class="ic" data-act="chat-attach" title="عکس یا ویدیو">📎</button>' +
+           (canRecord() ? '<button class="ic' + (chatRecorder ? ' on' : '') + '" data-act="chat-rec" title="' +
+              (chatRecorder ? 'پایان و فرستادن' : 'ضبطِ صدا') + '">' + (chatRecorder ? '⏹' : '🎤') + '</button>' : '') +
+           (chatRecorder ? '<span class="chat-rec" id="chatRecT">● ' + recClock() + '</span>' : '') +
+           '<input type="text" id="chatText" placeholder="پیام…" value="' + esc(draft) + '" maxlength="4000">' +
+           '<button class="send" data-act="chat-send">▶</button></div>';
+    }
+    chatEl.innerHTML = h;
+    var body = chatEl.querySelector('#chatBody');
+    if (atEnd) {
+      if (body && typeof body.scrollTo === 'function') body.scrollTo(0, 1e9);
+      else if (body) body.scrollTop = 1e9;
+      chatShown = chatMsgs.length;
+    } else if (body) body.scrollTop = keepTop;
+  }
+
+  function chatOpen() {
+    chatEnsure();
+    if (!chatEl) return;
+    chatOpenNow = true;
+    chatRender();
+    chatPull();
+    if (typeof setInterval === 'function' && !chatTimer) chatTimer = setInterval(chatPull, CHAT_EVERY_OPEN);
+  }
+
+  function chatClose() {
+    chatOpenNow = false;
+    if (chatTimer && typeof clearInterval === 'function') { clearInterval(chatTimer); chatTimer = null; }
+    if (chatRecorder) chatRecord();          // ضبطِ نیمه‌کاره بسته شود
+    chatRender();
+    render();
+  }
+
+  function chatSetName() {
+    var inp = chatEl && chatEl.querySelector('#chatNameIn');
+    var v = inp ? String(inp.value || '').trim() : '';
+    if (!v) return;
+    chatName = v.slice(0, 60);
+    store('chat-name-' + live.a, chatName);
+    chatRender();
+  }
+
+  // پیام‌های تازه — و شمارشِ نخوانده‌ها از روی seq
+  function chatPull() {
+    if (!live || typeof fetch !== 'function') return Promise.resolve();
+    return fetch(chatUrl('') + '&after=' + chatSeq, { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (j) {
+        chatBlocked = !!j.blocked;
+        if (typeof j.ownerSeenSeq === 'number' && j.ownerSeenSeq > chatOwnerSeen) chatOwnerSeen = j.ownerSeenSeq;
+        if (j.vapid) chatVapid = j.vapid;
+        if (j.name && !chatName) { chatName = j.name; store('chat-name-' + live.a, chatName); }
+        var fresh = j.messages || [];
+        for (var i = 0; i < fresh.length; i++) {
+          var m = fresh[i], found = false;
+          for (var k = 0; k < chatMsgs.length; k++) if (chatMsgs[k].id === m.id) { chatMsgs[k] = m; found = true; break; }
+          if (!found) chatMsgs.push(m);
+          if (m.seq > chatSeq) chatSeq = m.seq;
+        }
+        chatMsgs.sort(function (a, b) { return a.seq - b.seq; });
+        chatUnread = 0;
+        for (var u = 0; u < chatMsgs.length; u++)
+          if (chatMsgs[u].from === 'o' && chatMsgs[u].seq > chatSeen && !chatMsgs[u].deleted) chatUnread++;
+        if (chatOpenNow && chatSeq > chatSeen) {
+          chatSeen = chatSeq; chatUnread = 0;
+          store('chat-seen-' + live.a, String(chatSeen));
+          fetch(chatUrl('/seen'), { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ seq: chatSeen }) }).catch(function () {});
+        }
+        if (chatOpenNow) chatRender(); else if (data) render();
+      })
+      .catch(function () { /* آفلاین — دفعهٔ بعد */ });
+  }
+
+  function chatPost(body) {
+    chatBusy = true; chatErr = ''; chatRender();
+    return fetch(chatUrl(''), { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+      .then(function (out) {
+        chatBusy = false;
+        if (!out.ok) {
+          if (out.status === 403) chatBlocked = true;
+          else chatErr = out.status === 429 ? 'پیام‌ها زیاد شد — کمی صبر کنید' : 'پیام نرفت — دوباره بفرستید';
+          if (body.text) chatDraftBack = body.text;
+          chatRender();
+          return false;
+        }
+        var m = out.j.message;
+        //  ⛔ اگر پرسشِ دوره‌ای همین پیام را زودتر آورده بود، دوتا نشود (۱۴۰۵/۰۷/۱۶)
+        var had = false;
+        for (var k = 0; k < chatMsgs.length; k++) if (chatMsgs[k].id === m.id) { chatMsgs[k] = m; had = true; break; }
+        if (!had) chatMsgs.push(m);
+        if (m.seq > chatSeq) chatSeq = m.seq;
+        chatRender();
+        return true;
+      })
+      .catch(function () {
+        chatBusy = false;
+        chatErr = 'به اینترنت نرسید — متنِ شما در کادر ماند';
+        if (body.text) chatDraftBack = body.text;
+        chatRender(); return false;
+      });
+  }
+
+  function chatSendText() {
+    var inp = chatEl && chatEl.querySelector('#chatText');
+    var text = inp ? String(inp.value || '').trim() : '';
+    if (!text || chatBusy || !chatName) return;
+    if (inp) inp.value = '';
+    chatPost({ name: chatName, text: text });
+  }
+
+  function chatDelete(id) {
+    if (!id || typeof fetch !== 'function') return;
+    fetch(chatUrl('/' + encodeURIComponent(id)), { method: 'DELETE' })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (j) {
+        for (var i = 0; i < chatMsgs.length; i++) if (chatMsgs[i].id === id) chatMsgs[i] = j.message;
+        chatRender();
+      })
+      .catch(function () {});
+  }
+
+  // فایل (عکس/ویدیو/صدا) ⇒ اول خامش بالا می‌رود، بعد پیامی با شناسه‌اش
+  function chatUpload(blob, mime) {
+    var kind = /^image\//.test(mime) ? 'image' : /^video\//.test(mime) ? 'video' : /^audio\//.test(mime) ? 'audio' : '';
+    if (!kind) return Promise.resolve(false);
+    chatBusy = true; chatRender();
+    return fetch(chatUrl('/media'), { method: 'POST', headers: { 'Content-Type': mime }, body: blob })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (j) {
+        chatBusy = false;
+        // ⛔ نسخهٔ خودمان پیش از رفتنِ پیام روی همین گوشی می‌نشیند
+        return mediaKeep(j.mediaId, blob).then(function () { return chatPost({ name: chatName, kind: kind, mediaId: j.mediaId }); });
+      })
+      .catch(function (e) { chatBusy = false; chatRender(); alertSafe(e === 413 || e === 400 ? 'فایل بزرگ است یا پذیرفته نشد' : 'فرستاده نشد'); return false; });
+  }
+
+  function alertSafe(t) { try { window.alert(t); } catch (e) { /* آزمون */ } }
+
+  function chatAttach() {
+    if (typeof document.createElement !== 'function') return;
+    var inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*,video/*';
+    inp.addEventListener('change', function () {
+      var f = inp.files && inp.files[0];
+      if (f) chatUpload(f, f.type || 'application/octet-stream');
+    });
+    inp.click();
+  }
+
+  function canRecord() {
+    return typeof MediaRecorder === 'function' && typeof navigator !== 'undefined' &&
+           navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function';
+  }
+
+  // یک ضربه شروع، ضربهٔ بعد پایان و فرستادن
+  function chatRecord() {
+    if (!canRecord()) return;
+    if (chatRecorder) {
+      var rec = chatRecorder; chatRecorder = null;
+      if (chatRecTick && typeof clearInterval === 'function') { clearInterval(chatRecTick); chatRecTick = null; }
+      try { rec.stop(); } catch (e) {}
+      chatRender();
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+      var chunks = [];
+      var mime = MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm'
+               : MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '';
+      var rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function () {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        var type = rec.mimeType || mime || 'audio/webm';
+        var blob = new Blob(chunks, { type: type });
+        if (blob.size > 0) chatUpload(blob, type.split(';')[0]);
+      };
+      rec.start();
+      chatRecorder = rec;
+      chatRecAt = Date.now();
+      chatRender();
+      //  ⚠️ فقط همان یک برچسب عوض می‌شود — بازسازیِ کلِ چت هر ثانیه کادرِ تایپ را از دست می‌انداخت
+      if (typeof setInterval === 'function') chatRecTick = setInterval(function () {
+        var t = chatEl && chatEl.querySelector('#chatRecT');
+        if (t) t.textContent = '● ' + recClock();
+      }, 1000);
+    }).catch(function () { alertSafe('دسترسی به میکروفون داده نشد'); });
+  }
+
+  // ── پوش: «مرورگرش هم بسته بود پیام برود» ─────────────────────────────
+  function canPush() {
+    return !!chatVapid && typeof navigator !== 'undefined' && 'serviceWorker' in navigator &&
+           typeof PushManager !== 'undefined' && typeof Notification !== 'undefined' &&
+           Notification.permission !== 'denied';
+  }
+
+  // ⛔ سافاریِ پیش از ۱۵ و وب‌ویوهای کهنه ‎requestPermission‎ را با callback دارند و
+  // هیچ Promiseی برنمی‌گردانند — ‎.then‎ روی ‎undefined‎ همان لحظه استثنا می‌داد و
+  // دکمه هیچ کاری نمی‌کرد (۱۴۰۵/۰۷/۲۱). هر دو شکل این‌جا یکی می‌شوند.
+  function askNotify() {
+    return new Promise(function (done) {
+      try {
+        var p = Notification.requestPermission(function (perm) { done(perm); });
+        if (p && typeof p.then === 'function') p.then(done, function () { done('default'); });
+      } catch (e) { done('default'); }
+    });
+  }
+
+  function b64key(s) {
+    var pad = '='.repeat((4 - s.length % 4) % 4);
+    var raw = atob((s + pad).replace(/-/g, '+').replace(/_/g, '/'));
+    var out = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+    return out;
+  }
+
+  function chatPush() {
+    if (!canPush()) return;
+    askNotify().then(function (perm) {
+      if (perm !== 'granted') return;
+      //  لینکِ کوتاه (‎/a/…‎): کارگر همان ‎/a/sw.js‎ است، نه کنارِ مسیرِ حساب
+      var swAt = /\/a\/[^\/]+\/[^\/]+\/[^\/]+\/?$/.test(location.pathname || '') ? '/a/sw.js' : 'sw.js';
+      return navigator.serviceWorker.register(swAt).then(function (reg) {
+        return reg.pushManager.getSubscription().then(function (sub) {
+          return sub || reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64key(chatVapid) });
+        });
+      }).then(function (sub) {
+        return fetch(chatUrl('/push'), { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                         body: JSON.stringify({ subscription: sub.toJSON ? sub.toJSON() : sub, url: location.href }) });
+      }).then(function () { alertSafe('از این به بعد جوابِ پمپ به همین گوشی خبر داده می‌شود.'); });
+    }).catch(function () {});
+  }
+
+  var hash = (location.hash || '').replace(/^#/, '');
+  // ══ لینکِ کوتاه (۱۴۰۵/۰۷/۲۱): ‎vill3n.top/a/<پمپ>/<حساب>/<رمز>‎ ══
+  // صاحب سامانه: «چرا لینک‌های کیو‌آر این‌قدر بزرگ‌اند و روی ‎vill3n.top‎ نیستند؟»
+  // داده داخلِ لینک نیست؛ همان سه تکهٔ زنده در مسیر است و حساب از سرور خوانده می‌شود.
+  // ⛔ کیو‌آرهای چاپ‌شدهٔ قبلی (‎#…&d=…‎) دست نخوردند و مثلِ همیشه کار می‌کنند.
+  var pm = /\/a\/([^\/?#]+)\/([^\/?#]+)\/([^\/?#]+)\/?$/.exec(location.pathname || '');
+  if (pm && !liveParse(hash)) hash = 's=' + pm[1] + '&a=' + pm[2] + '&k=' + pm[3] + (hash ? '&' + hash : '');
+  live = liveParse(hash);
+  // ⛔ کیو‌آری که با ساعتِ جلورفتهٔ کامپیوترِ پمپ ساخته شده، عکسِ زنده را قفل نکند
+  if (live) liveAt = live.t > Date.now() + 600000 ? 0 : live.t;
+  var m = /(?:^|&)d=([^&]+)/.exec(hash);
+  if (!m && live) {
+    // لینکِ کوتاه: حساب از سرور — تا برسد «در حالِ گرفتن»
+    liveCheck().then(function () {
+      if (data) { render(); liveStart(); return; }
+      fail(liveStatus === 'off' ? 'به اینترنت نرسید.' : 'این حساب هنوز به سرور نرسیده است.',
+           liveStatus === 'off' ? 'اینترنتِ گوشی را ببینید و دوباره باز کنید.'
+                                : 'چند دقیقهٔ دیگر دوباره باز کنید؛ برنامهٔ پمپ باید روشن باشد.');
+    });
+    return;
+  }
+  if (!m) {
+    fail('این نشانی دادهٔ حسابی ندارد.',
+         'کیو‌آرِ حسابتان را دوباره اسکن کنید.');
+    return;
+  }
+
+  try {
+    inflate(b64(m[1]))
+      .then(function (txt) { data = JSON.parse(txt); render(); liveStart(); })
+      .catch(function (e) {
+        fail(e === 'old-browser'
+              ? 'مرورگرِ گوشی قدیمی است و نمی‌تواند این کد را باز کند.'
+              : 'دادهٔ این کیو‌آر خوانده نشد.', String(e));
+      });
+  } catch (e) {
+    fail('دادهٔ این کیو‌آر خوانده نشد.', String(e));
+  }
+})();
+</script>
+</body>
+</html>

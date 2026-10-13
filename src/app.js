@@ -134,6 +134,48 @@ function createSite({ dataDir, publicDir, config = {} }) {
     }
     ctx.html(views.checkPage(env(), verdict), 200, { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' });
   });
+  // ══ صفحهٔ حسابِ کیو‌آرِ پمپ — لینکِ کوتاهِ ‎/a/<پمپ>/<حساب>/<رمز>‎ (۱۴۰۵/۰۷/۲۱) ══
+  //  صاحب سامانه: «چرا لینک‌های کیو‌آر این‌قدر بزرگ‌اند و روی vill3n.top نیستند؟»
+  //  همان صفحهٔ ‎view/‎ِ ریپوی پمپ (‎public/acct/‎، کپیِ بایت‌به‌بایت)؛ حساب را خودش از
+  //  ‎api.vill3n.top‎ می‌خواند. ⛔ سیاستِ امنیتیِ جدا و تنگ: فقط اسکریپتِ درون‌خطیِ
+  //  همین صفحه (با اثرِ انگشت) و فقط ‎api.vill3n.top‎ برای داده و رسانه.
+  const acctDir = path.join(publicDir, 'acct');
+  const acctHtml = fs.existsSync(path.join(acctDir, 'index.html')) ? fs.readFileSync(path.join(acctDir, 'index.html'), 'utf8') : '';
+  const acctSw = fs.existsSync(path.join(acctDir, 'sw.js')) ? fs.readFileSync(path.join(acctDir, 'sw.js'), 'utf8') : '';
+  const acctScript = acctHtml.slice(acctHtml.indexOf('<script>') + 8, acctHtml.lastIndexOf('</script>'));
+  const ACCT_API = 'https://api.vill3n.top';
+  const acctCsp = [
+    "default-src 'self'",
+    `script-src ${sha(acctScript)}`,
+    "style-src 'self' 'unsafe-inline'",
+    `img-src 'self' data: blob: ${ACCT_API}`,
+    `media-src 'self' blob: ${ACCT_API}`,
+    `connect-src 'self' ${ACCT_API}`,
+    "worker-src 'self'",
+    "manifest-src 'self'",
+    "frame-ancestors 'none'",
+    "base-uri 'none'",
+    "form-action 'none'",
+    "object-src 'none'",
+  ].join('; ');
+  const ACCT_PART = /^[A-Za-z0-9._~-]{1,80}$/;
+  app.get('/a/sw.js', (ctx) => {
+    if (!acctSw) return app.notFound(ctx);
+    ctx.send(200, acctSw, 'text/javascript; charset=utf-8', { 'Cache-Control': 'no-cache', 'Service-Worker-Allowed': '/a/' });
+  });
+  app.get('/a/:s/:a/:k', (ctx) => {
+    const { s, a, k } = ctx.params;
+    if (!acctHtml || ![s, a, k].every((x) => ACCT_PART.test(x))) return app.notFound(ctx);
+    ctx.html(acctHtml, 200, {
+      'Content-Security-Policy': acctCsp,
+      'Cache-Control': 'no-cache',
+      'X-Robots-Tag': 'noindex, nofollow',
+      'Referrer-Policy': 'no-referrer',
+      //  پیامِ صوتیِ چتِ حساب میکروفون می‌خواهد — فقط همین صفحه
+      'Permissions-Policy': 'camera=(), microphone=(self), geolocation=(), payment=()',
+    });
+  });
+
   app.get('/app/:slug', (ctx) => {
     if (ctx.params.slug.endsWith('.md')) {
       const m = findApp(ctx.params.slug.slice(0, -3));

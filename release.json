@@ -1,5 +1,5 @@
 {
- "version": "2.6.0",
+ "version": "2.7.0",
  "files": [
   {
    "path": ".gitattributes",
@@ -54,7 +54,7 @@
   {
    "path": "package.json",
    "size": 585,
-   "sha256": "2363031dd9cca99f9aeebcbd2340e74a3324613ba2ad1708d3f0bf5be26dbc31"
+   "sha256": "49f0d7a053a66c735491be412786930733fbd98d60ac64d56c71caddea3429be"
   },
   {
    "path": "preview/app/fitness-pro.html",
@@ -85,6 +85,16 @@
    "path": "preview/index.html",
    "size": 184069,
    "sha256": "bf284154492d2e9c63366925ccb959a024c9a17471ae75762732ddc89a1fc688"
+  },
+  {
+   "path": "public/acct/index.html",
+   "size": 72566,
+   "sha256": "6d01b9e1bf9dc65f690f07cfcfdc0ad1aac61e9f44a123e883299efc32c8a55e"
+  },
+  {
+   "path": "public/acct/sw.js",
+   "size": 2173,
+   "sha256": "48500679fd8442486da75628147784da1da986b980520c154b52343d35e71857"
   },
   {
    "path": "public/assets/admin.css",
@@ -178,8 +188,8 @@
   },
   {
    "path": "src/app.js",
-   "size": 19249,
-   "sha256": "4918cc0bd588ab626eeb5898184cf7623f06036e8d331b808d44757caad7692c"
+   "size": 21642,
+   "sha256": "ae541b8c3ee22d8f6b86070213a576b6bf25c322931d29c8993770cf03c2564b"
   },
   {
    "path": "src/blocks.js",
@@ -308,8 +318,8 @@
   },
   {
    "path": "test/smoke.js",
-   "size": 126754,
-   "sha256": "c0ca33e29d772a4bbc02a9e992cdbe6913cb801b44e51eb9a611c8f232642379"
+   "size": 128500,
+   "sha256": "bdbe127604364dfa164186929ca828b310d47c2783ef7ab1967480a630887a09"
   },
   {
    "path": "test/telegram.js",
